@@ -42,3 +42,6 @@ next-env.d.ts
 
 # unsorted source photos dropped in the project root
 /WhatsApp Image*
+
+.vercel
+.env*
