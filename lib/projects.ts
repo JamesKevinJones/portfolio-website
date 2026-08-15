@@ -65,7 +65,9 @@ export const PROJECTS: Project[] = [
       detail:
         "There is no endpoint to upload it to. The privacy claim is architectural rather than a promise on a policy page — adding a server-side inference path would mean deleting the property the project exists to demonstrate.",
     },
-    facts: ["Euclidean, not cosine", "≥70% top-1 held out", "12 MB weights, lazy-loaded"],
+    // 8/10, not "80%": ten probes put the 95% interval at roughly 49-94%, and
+    // the repo's own gate is 60%. Quoting a rounder number would overstate it.
+    facts: ["Euclidean, not cosine", "8/10 top-1 on held-out probes", "12 MB weights, lazy-loaded"],
     stack: ["Next.js 16", "TensorFlow.js", "face-api", "visx"],
     live: "https://starmatch-liard.vercel.app",
     source: "https://github.com/JamesKevinJones/starmatch",
