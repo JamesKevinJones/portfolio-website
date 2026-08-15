@@ -1,19 +1,15 @@
-import { StatusBar } from "@/components/StatusBar";
-import { Hero } from "@/components/Hero";
-import { EvalGate } from "@/components/EvalGate";
-import { Projects } from "@/components/Projects";
-import { About } from "@/components/About";
-import { Footer } from "@/components/Footer";
+import { Hero } from "@/components/hero";
+import { Work } from "@/components/work";
+import { Approach } from "@/components/approach";
+import { About } from "@/components/about";
 
 export default function Home() {
   return (
-    <main>
-      <StatusBar />
+    <>
       <Hero />
-      <EvalGate />
-      <Projects />
+      <Work />
+      <Approach />
       <About />
-      <Footer />
-    </main>
+    </>
   );
 }

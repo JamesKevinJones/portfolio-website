@@ -2,11 +2,11 @@
 
 # Portfolio — Kevin Jones
 
-### Most portfolios show you the work. This one runs its own quality gate on the way down.
+### Most portfolios list what the work does. This one leads with what it won't.
 
-A personal site built as an operations console rather than a brochure — because
-the projects behind it are governed AI systems, and the design should sound like
-what it's describing.
+A personal site built around one argument: the interesting decision in a system
+is the constraint, not the feature. Six projects, each introduced by the thing
+it refuses to do.
 
 **[→ Open the live site](https://portfolio-website-eight-kappa-iwtiz3w2ef.vercel.app)**
 
@@ -26,57 +26,83 @@ Every developer portfolio reaches for the same three moves: a gradient hero, a
 grid of cards, a terminal-green accent. None of them say anything about the
 person.
 
-The projects on this site — [frontier-platform](https://github.com/JamesKevinJones/frontier-platform),
-[job-rag](https://github.com/JamesKevinJones/job-rag),
-[riskpulse](https://github.com/JamesKevinJones/riskpulse),
-[memoryvault-ai](https://github.com/JamesKevinJones/Memoryvault-ai) — share a
-real vocabulary: CI quality gates, pass/fail evals, guardrails, risk scoring.
-So the site is built from that vocabulary instead of from a template.
+Reading back through my own repos, the same shape kept appearing. Frontier
+Platform refuses to answer when its evidence floors aren't met. StarMatch has no
+upload endpoint, so the privacy claim is architectural rather than promised. Job
+Autopilot deliberately stops short of submitting anything. CodeAuto won't run a
+workflow that fails validation.
 
-## The signature: a quality gate you scroll through
+In each case the constraint was the part that took the thinking. So the site is
+organised around it: every project card leads with a hazard-striped **Refuses**
+band stating what that system will not do, and the feature list comes after.
 
-The centerpiece is a CI-status panel that starts at **`0 / 4 passing`**, every
-check greyed out and pending. As you scroll, the section pins and the checks
-resolve one at a time — the glyph flips from `–` to `✓`, the row lifts to full
-opacity, and the counter climbs until it locks green at `4 / 4`.
+**Every refusal on the page is quoted from that project's own README or agent
+context.** If a constraint can't be pointed at in the source repo, it doesn't go
+on the site — which is the only reason the claim is worth anything.
 
-It's the same badge that sits at the top of `frontier-platform`'s README, except
-the thing being evaluated is a person. The motion isn't decoration; it's the
-point being made.
+## Featured
+
+| Project | Refuses |
+| --- | --- |
+| [StarMatch](https://github.com/JamesKevinJones/starmatch) | to upload your photo — no endpoint exists |
+| [Frontier Platform](https://github.com/JamesKevinJones/frontier-platform) | to answer when the evidence is weak |
+| [Job Autopilot](https://github.com/JamesKevinJones/job-autopilot) | to submit the application |
+| [CodeAuto](https://github.com/JamesKevinJones/CodeAut0) | to run a workflow that doesn't check out |
+| [JobMatch RAG](https://github.com/JamesKevinJones/job-rag) | to serve a stale listing |
+| [MemoryVault AI](https://github.com/JamesKevinJones/Memoryvault-ai) | to call the scrollback buffer memory |
 
 ## Design system
 
-Committed to a single dark identity — no theme toggle, deliberately.
+Neo-brutalism, shared with [StarMatch](https://github.com/JamesKevinJones/starmatch)
+so the two sites read as one hand: 3px ink borders, hard offset shadows, no blur
+and no gradients on any UI chrome. `.brut` is the single primitive the whole
+interface is built from.
 
-| Token     | Value     | Role                                     |
-| --------- | --------- | ---------------------------------------- |
-| `ink`     | `#0b0e14` | Background                               |
-| `panel`   | `#12161f` | Glass surfaces                           |
-| `wire`    | `#4a5468` | Secondary text, borders                  |
-| `mist`    | `#e7eaf0` | Primary text                             |
-| `signal`  | `#3ecf8e` | **Passing state only** — never decorative |
-| `alert`   | `#f0a93e` | **At-risk state only** — held in reserve  |
+| Token | Value | Role |
+| --- | --- | --- |
+| `paper` / `ink` | `#f4f1ea` / `#0b0b0b` | Surfaces, inverted in dark mode |
+| `acid` | `#ddf247` | Highlight, hazard stripe |
+| `volt` | `#4d5bff` | Primary action, focus ring |
+| `coral` | `#ff5c4d` | Secondary action |
+| `mint` · `orchid` | `#4ee6a8` · `#d78dff` | Per-project accents |
 
-The two accents are bound to real states. If something is green here, it means
-it passed.
+One accent per project, so the grid is scannable by hue before a word is read.
+Hazard striping is used on the refusal band and nowhere else — the moment it
+becomes texture it stops reading as a warning label.
 
-**Type:** Space Grotesk (display) · Inter (body) · JetBrains Mono (data + chrome).
-The mono face carries every readout, path, and status — the interface's own voice.
+**Type:** Archivo (display, 900) · Space Grotesk (body) · IBM Plex Mono (labels
+and data).
 
-**Glass:** panel-tinted frosted surfaces over an ambient grid field. Blur and
-saturation, not white translucency, so it stays inside the console palette
-rather than borrowing an iOS look.
+## Two bugs worth writing down
+
+Both were invisible in code review and obvious the moment contrast was actually
+measured in the browser.
+
+**White on coral fails AA.** Coral (`#ff5c4d`) reads as a dark accent and looks
+like it should carry white text. It measures **3.05:1** — below the 4.5 floor.
+Ink on the same colour is 6.46:1. Only volt is genuinely dark enough for white
+(4.93:1). `ACCENT_FG` in `lib/projects.ts` now encodes the measured pairing
+rather than the intuitive one.
+
+**The theme toggle and the `dark:` variant disagreed.** Tailwind v4's `dark:`
+variant defaults to `prefers-color-scheme`, but the toggle moves a `.dark`
+class. On a machine set to dark, switching the site to light left
+`dark:text-paper-dim` applied over the light paper background — **1.14:1**,
+text effectively invisible. The fix is one line, and it has to be there:
+
+```css
+@custom-variant dark (&:is(.dark *));
+```
 
 ## Motion
 
-All of it runs through `gsap.matchMedia`, so `prefers-reduced-motion` isn't an
-afterthought — the reduced branch renders the final state directly and registers
-no ScrollTriggers at all.
+Lenis for scroll, driven by the GSAP ticker rather than its own rAF loop — two
+loops on different clocks disagree by a frame, which shows up as jitter.
+ScrollTrigger handles the scroll-linked reveals.
 
-- **Hero** — a staggered boot sequence on load
-- **Eval gate** — pinned, scrubbed scroll story (above)
-- **Projects** — `ScrollTrigger.batch` reveals, staggered by row
-- **About** — two-speed parallax on the photographs
+Both sit inside `gsap.matchMedia`, so `prefers-reduced-motion` users register no
+triggers at all. Timelines use `gsap.from()` rather than animating out of a
+hidden state, so a bundle error leaves a readable page instead of a blank one.
 
 ## Running it
 
@@ -85,44 +111,25 @@ npm install
 npm run dev
 ```
 
-Then open `http://localhost:3000`.
-
 ```bash
-npm run build   # production build
-npm run start   # serve the build
-npm run lint    # eslint
+npm run build
 ```
-
-## Notes from the build
-
-Two problems worth writing down, since neither is obvious from the docs:
-
-**The pin silently collapsed.** `body` and `main` used a flex sticky-footer
-pattern. ScrollTrigger injects a pin-spacer element to reserve scroll distance,
-and as a flex child it inherited `flex-shrink: 1` — so the browser crushed it
-from its intended 1758px down to 478px. The pin looked "created" (the spacer
-existed, the trigger reported correct start/end) but never fired. Dropping the
-unnecessary flex wrapper fixed it.
-
-**Fonts measured too late.** ScrollTrigger takes its measurements before web
-fonts finish loading, so the pin distance was computed against a stale layout.
-A `document.fonts.ready` refresh corrects it — but scoped *inside* the component
-effect. Calling refresh at module scope fires before the trigger exists and
-leaves it in a broken state.
 
 ## Structure
 
 ```
-app/            layout, page, global styles + design tokens
-components/     StatusBar · Hero · EvalGate · Projects · About · Footer
-lib/gsap.ts     GSAP + ScrollTrigger registration
-public/images/  photography
+app/globals.css     design tokens, .brut primitive, reduced-motion
+app/layout.tsx      fonts, metadata, pre-paint theme script, skip link
+lib/projects.ts     the six projects and four principles — all page content
+components/         hero · work · approach · about · header · footer
 ```
+
+Copy lives in `lib/projects.ts`, not in the components.
 
 ## Contact
 
 [LinkedIn](https://www.linkedin.com/in/jameskevinjones/) ·
-[Instagram](https://www.instagram.com/jameskevinjones/) ·
+[GitHub](https://github.com/JamesKevinJones) ·
 [Email](mailto:kj6384647@gmail.com)
 
 ## License

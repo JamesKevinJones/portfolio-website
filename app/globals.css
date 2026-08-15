@@ -1,130 +1,237 @@
 @import "tailwindcss";
-@config "../tailwind.config.ts";
 
-@theme inline {
-  --font-display: var(--font-space-grotesk);
-  --font-body: var(--font-inter);
-  --font-mono: var(--font-jetbrains-mono);
+/*
+  Bind the `dark:` utility variant to the .dark class rather than Tailwind's
+  default prefers-color-scheme query.
+
+  Without this, the theme toggle moves data-theme and .dark while every
+  `dark:` utility keeps following the OS setting. On a machine set to dark,
+  switching the site to light left `dark:text-paper-dim` applied over the light
+  paper background — 1.14:1, text invisible. The toggle has to be the single
+  authority, and the pre-paint script sets .dark before first paint.
+*/
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Portfolio design language: neo-brutalism, carried over from StarMatch.
+
+  Hard 3px ink borders, hard offset shadows, no blur and no soft gradients on
+  any UI chrome. The one patterned surface on the site is the hazard band, and
+  it is reserved for a single job: stating what a system refuses to do. Keeping
+  that stripe rare is what makes it read as a warning label rather than decor.
+*/
+
+@theme {
+  /* Surfaces */
+  --color-paper: #f4f1ea;
+  --color-paper-dim: #e8e3d7;
+  --color-ink: #0b0b0b;
+  --color-ink-soft: #2e2c28;
+
+  /* Accents — high chroma, used flat and unblended. One per project. */
+  --color-acid: #ddf247;
+  --color-volt: #4d5bff;
+  --color-coral: #ff5c4d;
+  --color-mint: #4ee6a8;
+  --color-orchid: #d78dff;
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* The brutalist offset shadow, at three weights */
+  --shadow-brut-sm: 3px 3px 0 0 var(--color-ink);
+  --shadow-brut: 6px 6px 0 0 var(--color-ink);
+  --shadow-brut-lg: 10px 10px 0 0 var(--color-ink);
+
+  --radius-brut: 2px;
 }
 
-html {
-  color-scheme: dark;
-}
-
-::selection {
-  background: var(--color-signal);
-  color: var(--color-ink);
-}
-
-@keyframes cursor-blink {
-  0%,
-  49% {
-    opacity: 1;
+@layer base {
+  :root {
+    --bg: var(--color-paper);
+    --fg: var(--color-ink);
+    --panel: #ffffff;
+    --line: var(--color-ink);
+    /* The hazard stripe's light colour. Inverted in dark mode so the band
+       stays a warning rather than turning into a black-on-black texture. */
+    --hazard-a: var(--color-ink);
+    --hazard-b: var(--color-acid);
   }
-  50%,
-  100% {
-    opacity: 0;
+
+  /*
+    Dark mode inverts the paper but keeps the borders hard. Brutalism in the
+    dark means bright rules on near-black, not soft grey-on-grey.
+  */
+  :root[data-theme="dark"],
+  html.dark {
+    --bg: #121110;
+    --fg: #f4f1ea;
+    --panel: #1c1a18;
+    --line: #f4f1ea;
+    --hazard-a: #f4f1ea;
+    --hazard-b: var(--color-acid);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121110;
+      --fg: #f4f1ea;
+      --panel: #1c1a18;
+      --line: #f4f1ea;
+      --hazard-a: #f4f1ea;
+      --hazard-b: var(--color-acid);
+    }
+  }
+
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    /* Lenis drives scrolling; native smooth scroll would fight it. */
+    scroll-behavior: auto;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  /* Visible, unmissable focus — brutalism has no excuse for poor a11y. */
+  :focus-visible {
+    outline: 3px solid var(--color-volt);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--color-acid);
+    color: var(--color-ink);
   }
 }
 
-.cursor-blink {
-  animation: cursor-blink 1s step-end infinite;
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+@layer components {
+  /* The single primitive the whole UI is built from. */
+  .brut {
+    border: 3px solid var(--line);
+    border-radius: var(--radius-brut);
+    background: var(--panel);
+    box-shadow: var(--shadow-brut);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .brut-sm {
+    border: 3px solid var(--line);
+    border-radius: var(--radius-brut);
+    background: var(--panel);
+    box-shadow: var(--shadow-brut-sm);
+  }
+
+  /* Press-down interaction: the shadow collapses into the element. */
+  .brut-press {
+    transition:
+      transform 120ms cubic-bezier(0.2, 0, 0, 1),
+      box-shadow 120ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .brut-press:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 0 var(--line);
+  }
+
+  .brut-press:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 0 var(--line);
+  }
+
+  /*
+    Theme-toggle icons. Both are in the DOM; CSS picks one from the root's
+    theme so the button needs no React state and cannot flash the wrong glyph.
+  */
+  .theme-icon-sun {
+    display: none;
+  }
+  .theme-icon-moon {
+    display: block;
+  }
+
+  :root[data-theme="dark"] .theme-icon-sun,
+  :root.dark .theme-icon-sun {
+    display: block;
+  }
+  :root[data-theme="dark"] .theme-icon-moon,
+  :root.dark .theme-icon-moon {
+    display: none;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /*
+    Diagonal hazard stripes. The site's signature device: it marks the one line
+    on each project that states what the system will not do. Used nowhere else.
+  */
+  .hazard {
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--hazard-a) 0 10px,
+      var(--hazard-b) 10px 20px
+    );
+  }
+
+  /*
+    The stripe drifts one full period on hover, so the band reads as live tape
+    rather than a static fill. 20px matches the pattern period above, which is
+    what makes the loop seamless.
+  */
+  @keyframes hazard-drift {
+    to {
+      background-position: 28.284px 0;
+    }
+  }
+
+  .group\/card:hover .hazard-live {
+    animation: hazard-drift 1.4s linear infinite;
+  }
+
+  /* Text set over the acid highlight in the hero. */
+  .mark {
+    background: var(--color-acid);
+    color: var(--color-ink);
+    padding: 0 0.12em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
 }
 
-.animate-rise-in {
-  animation: rise-in 0.5s ease-out both;
-}
-
+/*
+  Every animation on this site is opt-out. The GSAP timelines check this query
+  too, but killing it at the CSS layer catches anything they missed.
+*/
 @media (prefers-reduced-motion: reduce) {
-  .cursor-blink,
-  .animate-rise-in {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-/* Ambient background field — faint console/oscilloscope grid, kept
-   deliberately subtle so it stays texture, not decoration. */
-.bg-grid-pattern {
-  background-image:
-    linear-gradient(rgba(231, 234, 240, 0.7) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(231, 234, 240, 0.7) 1px, transparent 1px);
-  background-size: 44px 44px;
-}
-
-/* Frosted "HUD" glass — the site's glassmorphism treatment. Panel color
-   plus blur, not iOS-white glass, so it stays inside the console palette. */
-.glass {
-  background: color-mix(in srgb, var(--color-panel) 55%, transparent);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid color-mix(in srgb, var(--color-mist) 10%, transparent);
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in srgb, var(--color-mist) 6%, transparent),
-    0 8px 30px -12px rgba(0, 0, 0, 0.6);
-}
-
-.glass-hover {
-  transition:
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.glass-hover:hover {
-  border-color: color-mix(in srgb, var(--color-signal) 40%, transparent);
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in srgb, var(--color-mist) 8%, transparent),
-    0 8px 30px -10px color-mix(in srgb, var(--color-signal) 20%, transparent);
-}
-
-.glass-thin {
-  background: color-mix(in srgb, var(--color-panel) 45%, transparent);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
-}
-
-/* EvalGate scroll story — GSAP/ScrollTrigger toggles .is-passing per row
-   as it crosses the trigger point; the transition itself is CSS. */
-.gate-row {
-  opacity: 0.4;
-  transition: opacity 0.35s ease;
-}
-
-.gate-row.is-passing {
-  opacity: 1;
-}
-
-.gate-glyph {
-  display: inline-block;
-  color: var(--color-wire);
-  transition: color 0.35s ease;
-}
-
-.gate-row.is-passing .gate-glyph {
-  color: var(--color-signal);
-}
-
-.gate-counter {
-  transition:
-    color 0.3s ease,
-    border-color 0.3s ease,
-    background-color 0.3s ease;
-}
-
-.gate-counter.all-passing {
-  color: var(--color-signal);
-  border-color: color-mix(in srgb, var(--color-signal) 60%, transparent);
-  background-color: color-mix(in srgb, var(--color-signal) 10%, transparent);
 }
