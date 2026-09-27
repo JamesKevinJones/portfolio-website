@@ -60,22 +60,30 @@ test("reduced motion: whole page, nothing pinned, no Lenis, all sections present
   }
 });
 
-test("375×667: the contact chip never sits on a Try button", async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 667 });
-  await page.goto("/");
-  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
-  const chip = page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i });
-  for (const [i, p] of PROJECTS.entries()) {
-    const btn = page.locator("#work article.wk-panel").nth(i).getByRole("button", { name: p.attempt });
-    // Park the Try pill at the very bottom of the screen: the worst case for a bottom-right chip.
-    await btn.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().bottom + window.scrollY - innerHeight + 4));
-    await page.waitForTimeout(400);
-    if (!(await chip.isVisible())) continue;
-    const [a, b] = [(await btn.boundingBox())!, (await chip.boundingBox())!];
-    const overlap = a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
-    expect(overlap, `chip covers ${p.name}'s Try button`).toBe(false);
-  }
-});
+for (const [w, h] of [[375, 667], [768, 1024], [1280, 700]]) {
+  test(`${w}×${h}: the contact chip never covers a Try button or its refusal line`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("/");
+    await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+    const chip = page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i });
+    const rows = page.locator("#work [data-stage-footer]");
+    await expect(rows).toHaveCount(PROJECTS.length);
+    for (let i = 0; i < PROJECTS.length; i++) {
+      await rows.nth(i).getByRole("button", { name: PROJECTS[i].attempt }).click(); // status line now has text
+      // Walk the row up through the bottom of the screen, where a bottom-right chip sits.
+      for (const lift of [-20, 10, 40, 70, 100]) {
+        await rows.nth(i).evaluate((el, d) => {
+          window.scrollTo(0, el.getBoundingClientRect().bottom + scrollY - innerHeight + d);
+        }, lift);
+        await page.waitForTimeout(350);
+        if (!(await chip.isVisible())) continue;
+        const [a, b] = [(await rows.nth(i).boundingBox())!, (await chip.boundingBox())!];
+        const overlap = a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+        expect(overlap, `chip covers ${PROJECTS[i].name}'s Try row (lift ${lift})`).toBe(false);
+      }
+    }
+  });
+}
 
 for (const width of [375, 768, 1024, 1440]) {
   test(`${width}px: the page never scrolls sideways, top to bottom`, async ({ page }) => {

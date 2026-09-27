@@ -10,6 +10,11 @@ type ContactChipProps = {
   showFrom?: string;
   /** ...and gets out of the way once this section's top reaches 85% of the screen. */
   hideAt?: string;
+  /**
+   * Rows the chip must never sit on, e.g. each project's Try button and refusal line.
+   * While one of them passes through the bottom of the screen, the chip steps aside.
+   */
+  avoid?: string;
 };
 
 /**
@@ -20,7 +25,11 @@ type ContactChipProps = {
  * section arrives, so it never duplicates a visible action.
  * Hidden means visibility: hidden (autoAlpha), so it also leaves the tab order.
  */
-export function ContactChip({ showFrom = "#work", hideAt = "#contact" }: ContactChipProps) {
+export function ContactChip({
+  showFrom = "#work",
+  hideAt = "#contact",
+  avoid = "[data-stage-footer]",
+}: ContactChipProps) {
   const chip = useRef<HTMLDivElement>(null);
   const { copied, copy } = useCopyEmail();
 
@@ -32,7 +41,9 @@ export function ContactChip({ showFrom = "#work", hideAt = "#contact" }: Contact
       const mm = gsap.matchMedia();
       // Motion: slide up from below the fold with power3.out, drop away with power3.in.
       // Reduced motion: the same show/hide, instantly.
-      mm.add({ motion: MQ.motion, reduce: MQ.reduce }, (ctx) => {
+      mm.add(
+        { motion: MQ.motion, reduce: MQ.reduce, pinned: `${MQ.walkthrough} and ${MQ.motion}` },
+        (ctx) => {
         const still = Boolean(ctx.conditions?.reduce);
         const show = (on: boolean) =>
           gsap.to(el, {
@@ -43,19 +54,50 @@ export function ContactChip({ showFrom = "#work", hideAt = "#contact" }: Contact
             overwrite: true,
           });
 
-        const st = ScrollTrigger.create({
-          trigger: showFrom,
-          start: "top bottom", // first pixel of the section enters the screen
-          endTrigger: hideAt,
-          end: "top 85%", // the contact section is clearly arriving
-          onToggle: (self) => show(self.isActive),
-        });
-        return () => st.kill();
-      });
+        let inRange = false;
+        const covering = new Set<Element>();
+        const update = () => show(inRange && covering.size === 0);
+
+        const triggers = [
+          ScrollTrigger.create({
+            trigger: showFrom,
+            start: "top bottom", // first pixel of the section enters the screen
+            endTrigger: hideAt,
+            end: "top 85%", // the contact section is clearly arriving
+            onToggle: (self) => {
+              inRange = self.isActive;
+              update();
+            },
+          }),
+        ];
+
+        // In the vertical list (phones, short screens, reduced motion) the Try rows scroll
+        // under the chip's corner. Step aside from the moment a row's top enters the screen
+        // until its bottom has cleared the bottom 120px, which covers the chip plus its
+        // inset at every breakpoint. In the pinned walkthrough the rows sit well above it.
+        if (!ctx.conditions?.pinned) {
+          gsap.utils.toArray<Element>(avoid).forEach((row) => {
+            triggers.push(
+              ScrollTrigger.create({
+                trigger: row,
+                start: "top bottom",
+                end: "bottom bottom-=120",
+                onToggle: (self) => {
+                  if (self.isActive) covering.add(row);
+                  else covering.delete(row);
+                  update();
+                },
+              }),
+            );
+          });
+        }
+        return () => triggers.forEach((st) => st.kill());
+        },
+      );
 
       return () => mm.revert();
     },
-    { dependencies: [showFrom, hideAt] },
+    { dependencies: [showFrom, hideAt, avoid] },
   );
 
   return (

@@ -73,3 +73,24 @@ test("reduced motion: Try still answers, scene stays in its final pose", async (
   await expect(panel.locator("[data-stage]")).toHaveAttribute("data-state", "refused");
   await expect(panel.locator(".ca-issue")).toBeVisible();
 });
+
+for (const [w, h] of [[375, 667], [1024, 700]]) {
+  test(`${w}×${h}: pressing Try never changes the panel's height`, async ({ page }) => {
+    // A taller row after the first press would shift every scroll trigger below it.
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("/");
+    await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+    const rows = page.locator("#work [data-stage-footer]");
+    await expect(rows).toHaveCount(6);
+    for (let i = 0; i < 6; i++) {
+      const row = rows.nth(i);
+      const before = (await row.boundingBox())!.height;
+      // Ten presses without waiting out the "no" shake each time. "Refused ×10." is the longest.
+      await row.getByRole("button").evaluate((b: HTMLButtonElement) => {
+        for (let k = 0; k < 10; k++) b.click();
+      });
+      await expect(row.getByRole("status")).toContainText("×10");
+      expect((await row.boundingBox())!.height).toBe(before);
+    }
+  });
+}

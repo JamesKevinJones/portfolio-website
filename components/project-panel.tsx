@@ -106,7 +106,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
             >
               <Scene />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4">
+            <div data-stage-footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4">
               <button
                 ref={button}
                 type="button"
@@ -115,7 +115,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
               >
                 {project.attempt}
               </button>
-              <p role="status" className="label min-h-[1em] text-neon">
+              <p role="status" className="label min-h-[2.75em] basis-full leading-snug text-neon walk:min-h-[1em] walk:basis-auto">
                 {status}
               </p>
             </div>
