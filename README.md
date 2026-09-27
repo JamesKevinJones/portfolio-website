@@ -33,8 +33,8 @@ Autopilot deliberately stops short of submitting anything. CodeAuto won't run a
 workflow that fails validation.
 
 In each case the constraint was the part that took the thinking. So the site is
-organised around it: every project card leads with a hazard-striped **Refuses**
-band stating what that system will not do, and the feature list comes after.
+organised around it: every project leads with a hazard-striped **Refuses**
+band, and a button that asks it to do the thing anyway. The feature list comes after.
 
 **Every refusal on the page is quoted from that project's own README or agent
 context.** If a constraint can't be pointed at in the source repo, it doesn't go
@@ -53,27 +53,20 @@ on the site — which is the only reason the claim is worth anything.
 
 ## Design system
 
-Neo-brutalism, shared with [StarMatch](https://github.com/JamesKevinJones/starmatch)
-so the two sites read as one hand: 3px ink borders, hard offset shadows, no blur
-and no gradients on any UI chrome. `.brut` is the single primitive the whole
-interface is built from.
+The Motion Kit look, my default across web projects: monochrome ink, one neon
+accent, grain and mesh for depth, dark only. Space Grotesk carries display and
+body, JetBrains Mono the 11px labels. The hazard stripe (neon on ink) appears on
+the refusal band and nowhere else; the moment it becomes texture it stops reading
+as a warning label.
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `paper` / `ink` | `#f4f1ea` / `#0b0b0b` | Surfaces, inverted in dark mode |
-| `acid` | `#ddf247` | Highlight, hazard stripe |
-| `volt` | `#4d5bff` | Primary action, focus ring |
-| `coral` | `#ff5c4d` | Secondary action |
-| `mint` · `orchid` | `#4ee6a8` · `#d78dff` | Per-project accents |
+| `ink` · `ink-2` · `ink-3` | `#0a0a0b` · `#111113` · `#18181b` | Page, panels, raised panels |
+| `line` | `#26262a` | 1px borders |
+| `bone` · `mute` | `#ededea` · `#8b8b92` | Text, secondary text |
+| `neon` · `neon-2` | `#c8ff2e` · `#8a6bff` | Accent, secondary accent |
 
-One accent per project, so the grid is scannable by hue before a word is read.
-Hazard striping is used on the refusal band and nowhere else — the moment it
-becomes texture it stops reading as a warning label.
-
-**Type:** Archivo (display, 900) · Space Grotesk (body) · IBM Plex Mono (labels
-and data).
-
-## Two bugs worth writing down
+## Two bugs from the brutalist version, still worth knowing
 
 Both were invisible in code review and obvious the moment contrast was actually
 measured in the browser.
@@ -96,13 +89,16 @@ text effectively invisible. The fix is one line, and it has to be there:
 
 ## Motion
 
-Lenis for scroll, driven by the GSAP ticker rather than its own rAF loop — two
-loops on different clocks disagree by a frame, which shows up as jitter.
-ScrollTrigger handles the scroll-linked reveals.
+GSAP (ScrollTrigger, SplitText, Flip) and Lenis, with Lenis driven by the GSAP
+ticker so smooth scroll and every trigger update in the same frame. Each project
+acts out its refusal in a small SVG scene; on screens at least 1024×760 the work
+section pins and scrolls sideways, one project per screen.
 
-Both sit inside `gsap.matchMedia`, so `prefers-reduced-motion` users register no
-triggers at all. Timelines use `gsap.from()` rather than animating out of a
-hidden state, so a bundle error leaves a readable page instead of a blank one.
+Everything sits inside `gsap.matchMedia`, so `prefers-reduced-motion` users get no
+pins, no smooth scroll and the final state of every animation, and the Try buttons
+still answer. Markup is the final state and timelines animate *from* it, so a
+bundle error leaves a readable page instead of a blank one. Only transform and
+opacity are animated.
 
 ## Running it
 
@@ -113,15 +109,26 @@ npm run dev
 
 ```bash
 npm run build
+npm run test:e2e        # Playwright, against the dev server
+npm run test:e2e:prod   # against a production build
 ```
 
 ## Structure
 
 ```
-app/globals.css     design tokens, .brut primitive, reduced-motion
-app/layout.tsx      fonts, metadata, pre-paint theme script, skip link
-lib/projects.ts     the six projects and four principles — all page content
-components/         hero · work · approach · about · header · footer
+app/globals.css           tokens, walk variant, grain/mesh/hazard, reduced motion
+app/layout.tsx            fonts, metadata, grain overlay, LenisProvider, skip link, JSON-LD
+lib/projects.ts           six projects (+ attempt verbs), four principles, STACK
+lib/site.ts               canonical URL and profile links
+lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
+lib/use-copy-email.ts     clipboard hook shared by the footer and the contact chip
+components/ui/            magnetic-button · section-heading · particle-field ·
+                          velocity-marquee · local-time · contact-chip ·
+                          ink-reveal · pointer-lens
+components/scenes/        one refusal scene per project + registry
+components/               hero · work · project-panel · approach · about ·
+                          site-header · site-footer · lenis-provider · brand-icons
+tests/e2e/                Playwright specs
 ```
 
 Copy lives in `lib/projects.ts`, not in the components.

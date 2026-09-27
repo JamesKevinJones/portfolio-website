@@ -67,10 +67,17 @@ export function ContactChip({ showFrom = "#work", hideAt = "#contact" }: Contact
         type="button"
         onClick={copy}
         aria-label={copied ? "Email copied" : "Copy email address"}
-        className="label flex items-center gap-3 rounded-full border border-line bg-ink/70 px-4 py-3 text-bone backdrop-blur-md transition-colors duration-300 hover:border-neon"
+        className="label flex items-center gap-2 rounded-full sm:gap-3 border border-line bg-ink/70 px-4 py-3 text-bone backdrop-blur-md transition-colors duration-300 hover:border-neon"
       >
         <span aria-hidden="true" className="h-2 w-2 rounded-full bg-neon" />
-        <span aria-live="polite">{copied ? "Copied" : "Copy email"}</span>
+        {/* Phones get a compact "@" pill so the chip never reaches a panel's Try button
+            (checked at 375×667 in page.spec.ts); the words stay for screen readers. */}
+        <span aria-hidden="true" className="sm:hidden">
+          {copied ? "✓" : "@"}
+        </span>
+        <span aria-live="polite" className="sr-only sm:not-sr-only">
+          {copied ? "Copied" : "Copy email"}
+        </span>
       </button>
     </div>
   );
