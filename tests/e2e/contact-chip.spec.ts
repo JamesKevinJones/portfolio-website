@@ -6,7 +6,7 @@ const chip = (page: import("@playwright/test").Page) =>
   page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i });
 
 async function hydrated(page: import("@playwright/test").Page) {
-  await expect(page.getByTestId("local-time")).toHaveText(/\d/);
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
 }
 
 test("chip is hidden on the hero, shows over the work, and hides at contact", async ({ page }) => {

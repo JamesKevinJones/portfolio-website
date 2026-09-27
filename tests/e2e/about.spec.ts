@@ -18,7 +18,7 @@ test("portrait swaps from the keyboard and the stack is listed", async ({ page }
 
 test("photos are revealed by scrolling, not left hidden", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("local-time")).toHaveText(/\d/); // scrolls before hydration are lost
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/); // scrolls before hydration are lost
   await page.locator("#about").scrollIntoViewIfNeeded();
   await page.mouse.wheel(0, 600);
   const curtain = page.locator("#about .ab-curtain").first();
@@ -29,7 +29,7 @@ test("photos are revealed by scrolling, not left hidden", async ({ page }) => {
 
 test("fine pointer: a lens opens over the portrait and closes when you leave", async ({ page }) => {
   await page.goto("/#about");
-  await expect(page.getByTestId("local-time")).toHaveText(/\d/); // hydrated
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/); // hydrated
   const frame = page.getByRole("button", { name: /swap photo/i });
   const lens = frame.locator("div.rounded-full[aria-hidden='true']");
   await frame.scrollIntoViewIfNeeded();
@@ -45,7 +45,7 @@ test("fine pointer: a lens opens over the portrait and closes when you leave", a
 
 test("about copy is bone and brightens word by word as it scrolls", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("local-time")).toHaveText(/\d/);
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
   const first = page.locator("#about .ab-copy p").first();
   await expect(first).toHaveCSS("color", "rgb(237, 237, 234)");
   await first.scrollIntoViewIfNeeded();

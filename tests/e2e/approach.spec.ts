@@ -3,7 +3,7 @@ import { PRINCIPLES } from "../../lib/projects";
 
 // Clicks before hydration are lost; the header clock gets real digits once React is live.
 async function hydrated(page: import("@playwright/test").Page) {
-  await expect(page.getByTestId("local-time")).toHaveText(/\d/);
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
 }
 
 test("rules open one at a time and show their source file", async ({ page }) => {
