@@ -54,3 +54,11 @@ test("about copy is bone and brightens word by word as it scrolls", async ({ pag
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await expect.poll(() => words.last().evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
 });
+
+test("the portrait's accessible name starts with its visible label (voice control)", async ({ page }) => {
+  await page.goto("/");
+  const swap = page.getByRole("button", { name: /swap photo/i });
+  const visible = (await swap.locator(".label").textContent())!.trim().toLowerCase();
+  const name = (await swap.getAttribute("aria-label"))!.toLowerCase();
+  expect(name.startsWith(visible)).toBe(true);
+});

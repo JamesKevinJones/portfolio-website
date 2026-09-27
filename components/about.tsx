@@ -82,7 +82,7 @@ export function About() {
           <button
             type="button"
             aria-pressed={mural}
-            aria-label={`Portrait of ${PROFILE.fullName}. Swap photo`}
+            aria-label={`Swap photo. Portrait of ${PROFILE.fullName}`}
             onClick={() => setMural((m) => !m)}
             className="ab-frame group relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-line bg-ink-2"
           >
@@ -119,7 +119,7 @@ export function About() {
               </div>
             </div>
             <span className="label absolute bottom-4 left-4 rounded-full bg-ink/85 px-3 py-1.5 text-bone">
-              Hover or tap to swap
+              Swap photo
             </span>
           </button>
 

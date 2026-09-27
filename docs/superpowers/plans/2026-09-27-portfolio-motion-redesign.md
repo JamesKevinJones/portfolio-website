@@ -2984,7 +2984,7 @@ export function About() {
           <button
             type="button"
             aria-pressed={mural}
-            aria-label={`Portrait of ${PROFILE.fullName}. Swap photo`}
+            aria-label={`Swap photo. Portrait of ${PROFILE.fullName}`}
             onClick={() => setMural((m) => !m)}
             className="ab-frame group relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-line bg-ink-2"
           >
@@ -3021,7 +3021,7 @@ export function About() {
               </div>
             </div>
             <span className="label absolute bottom-4 left-4 rounded-full bg-ink/85 px-3 py-1.5 text-bone">
-              Hover or tap to swap
+              Swap photo
             </span>
           </button>
 
@@ -3512,3 +3512,24 @@ Folded into the tasks above: Global Constraints, Review Focus 6–7, File Struct
 Task 6b (what landed on the already-built sections), Task 8 (lens and ink reveal),
 Task 9 (shared copy hook) and Task 10 (chip placement test, DECISIONS entry). Research and
 source: `/mnt/project-files/cred-research/`.
+
+---
+
+## Final review fixes (2026-09-27)
+
+A fresh whole-branch review found no critical issues. These fixes landed after it, each
+with a test that failed first; the code blocks above predate them, the branch is current:
+
+- `#top` moved to a wrapper outside the hero pin, so the logo and Back to top land on the
+  hero at rest (header.spec).
+- The rules accordion refreshes ScrollTrigger after Flip (and at once under reduced
+  motion), so triggers below it stay accurate (approach.spec).
+- The contact chip steps aside while a project's Try row passes the bottom of the screen
+  in the list layout; the status line reserves two lines, so pressing Try never shifts the
+  page (page.spec, work-panels.spec).
+- The stage is capped at `100svh - 17rem` in the walkthrough, so very wide, short screens
+  keep the Try row and links (walkthrough.spec, 1920×760 to 3000×900).
+- Scenes wait in their opening pose (`poseScene`) instead of snapping back from the
+  final one (work-panels.spec).
+- The portrait's visible label is "Swap photo" and its accessible name starts with it
+  (about.spec).
