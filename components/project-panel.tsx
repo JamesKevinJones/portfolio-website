@@ -102,7 +102,10 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
               data-stage
               data-scene={project.slug}
               data-state="refused"
-              className="aspect-[400/260] w-full p-4 text-bone"
+              // Height follows width, so very wide, short screens (2560×760) pushed the Try row
+              // and links off the pinned panel. Cap it to what the screen leaves: 100svh minus
+              // the panel's padding (7.5rem), the stage footer, the gap and the links row.
+              className="aspect-[400/260] w-full p-4 text-bone walk:max-h-[calc(100svh-17rem)]"
             >
               <Scene />
             </div>

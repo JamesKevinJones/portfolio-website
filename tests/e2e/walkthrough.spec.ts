@@ -29,8 +29,11 @@ test.describe("desktop 1440×900", () => {
   });
 });
 
-test("1024×760: every panel's content fits its screen", async ({ page }) => {
-  await page.setViewportSize({ width: 1024, height: 760 });
+// Narrow-and-short is the obvious squeeze; very wide-and-short squeezes too, because the
+// stage's height follows its width.
+for (const [w, h] of [[1024, 760], [1920, 760], [2200, 800], [2560, 760], [2560, 900], [3000, 900]]) {
+test(`${w}×${h}: every panel's content fits its screen`, async ({ page }) => {
+  await page.setViewportSize({ width: w, height: h });
   await page.goto("/");
   await expect(workPinned(page)).toHaveCount(1);
   const overflows = await page
@@ -38,6 +41,7 @@ test("1024×760: every panel's content fits its screen", async ({ page }) => {
     .evaluateAll((panels) => panels.map((p) => p.scrollHeight - p.clientHeight));
   for (const o of overflows) expect(o).toBeLessThanOrEqual(1);
 });
+}
 
 test("1280×700: too short to pin, so it falls back to the list", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 700 });
