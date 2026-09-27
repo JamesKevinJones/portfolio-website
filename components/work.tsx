@@ -8,7 +8,7 @@ import { PROJECTS } from "@/lib/projects";
 import { useLenis } from "@/components/lenis-provider";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ProjectPanel } from "@/components/project-panel";
-import { runScene } from "@/components/scenes";
+import { poseScene, runScene } from "@/components/scenes";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -52,6 +52,7 @@ export function Work() {
                 stagger: STAGGER.items,
                 scrollTrigger: { trigger: panel, start: "top 85%", toggleActions: "play none none none" },
               });
+              poseScene(stageOf(panel));
               ScrollTrigger.create({
                 trigger: stageOf(panel),
                 start: "top 70%",
@@ -61,7 +62,8 @@ export function Work() {
                 onEnterBack: () => runScene(stageOf(panel)),
               });
             });
-            return;
+            // The context revert restores each scene's final pose; say so on the stage too.
+            return () => panels.forEach((panel) => (stageOf(panel).dataset.state = "refused"));
           }
 
           const el = root.current!;
@@ -121,6 +123,7 @@ export function Work() {
             }
             // Play when the panel's left edge passes 55% of the screen, i.e. when it
             // owns most of the viewport. Panel one is already there at pin start.
+            poseScene(stageOf(panel));
             ScrollTrigger.create({
               trigger: panel,
               containerAnimation: scroller,
@@ -150,7 +153,10 @@ export function Work() {
           };
           const t = track.current!;
           t.addEventListener("focusin", onFocus);
-          return () => t.removeEventListener("focusin", onFocus);
+          return () => {
+            t.removeEventListener("focusin", onFocus);
+            panels.forEach((panel) => (stageOf(panel).dataset.state = "refused"));
+          };
         },
       );
 

@@ -94,3 +94,28 @@ for (const [w, h] of [[375, 667], [1024, 700]]) {
     }
   });
 }
+
+test("a scene waits in its opening pose, then plays forward (no snap back)", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  const stage = page.locator("#work article.wk-panel").nth(2).locator("[data-stage]");
+  // Computed opacity and transform of every shape in the scene.
+  const pose = () =>
+    stage.evaluate((s) =>
+      [...s.querySelectorAll("svg *")]
+        // "none" and the identity matrix are the same pose.
+        .map((el) => `${getComputedStyle(el).opacity}|${getComputedStyle(el).transform.replace("none", "matrix(1, 0, 0, 1, 0, 0)")}`)
+        .join(";"),
+    );
+  // Stage top at 95% of the screen: in view, but short of its 70% play trigger.
+  await stage.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight * 0.95));
+  await page.waitForTimeout(500);
+  const waiting = await pose();
+  // Job Autopilot opens with the gate up and hidden; it drops only once the scene plays.
+  expect(await stage.locator(".ja-gate").evaluate((g) => getComputedStyle(g).opacity)).toBe("0");
+  await stage.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight * 0.3));
+  await expect(stage).toHaveAttribute("data-state", "refused", { timeout: 6000 });
+  await page.waitForTimeout(300);
+  expect(waiting).not.toBe(await pose());
+});

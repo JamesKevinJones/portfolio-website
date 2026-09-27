@@ -41,3 +41,21 @@ export function runScene(stage: HTMLElement) {
   running.set(stage, tl);
   return tl;
 }
+
+/**
+ * Holds a stage in its opening pose until runScene() plays it, so the scene plays
+ * forward when it arrives instead of showing the final pose and snapping back. The
+ * paused timeline is registered as the stage's running one, so runScene() kills it.
+ * Call inside the motion branch of a GSAP context: reverting that context restores the
+ * markup's final pose, which is what reduced motion and no-JS visitors see.
+ */
+export function poseScene(stage: HTMLElement) {
+  const key = stage.dataset.scene as SceneKey;
+  running.get(stage)?.kill();
+  // 1ms in rather than 0: zero-duration set() calls at the start only render once the
+  // playhead passes them, and a timeline paused at 0 never has. 1ms of motion is invisible.
+  const tl = SCENES[key].play(stage).pause(0.001);
+  stage.dataset.state = "ready";
+  running.set(stage, tl);
+  return tl;
+}
