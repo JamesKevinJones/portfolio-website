@@ -2854,6 +2854,7 @@ test("portrait swaps from the keyboard and the stack is listed", async ({ page }
 
 test("photos are revealed by scrolling, not left hidden", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByTestId("local-time")).toHaveText(/\d/); // scrolls before hydration are lost
   await page.locator("#about").scrollIntoViewIfNeeded();
   await page.mouse.wheel(0, 600);
   const curtain = page.locator("#about .ab-curtain").first();
