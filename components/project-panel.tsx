@@ -47,10 +47,10 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
     <article
       ref={panel}
       aria-labelledby={`${project.slug}-name`}
-      className="wk-panel group/panel relative walk:h-full walk:w-[88vw] walk:shrink-0 walk:px-10 walk:pb-10 walk:pt-28"
+      className="wk-panel group/panel relative walk:h-full walk:w-[88vw] walk:shrink-0 walk:px-10 walk:pb-10 walk:pt-20"
     >
       <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-12 walk:h-full">
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 walk:gap-4">
           <p className="wk-reveal label flex flex-wrap items-center gap-3 text-mute">
             <span className="text-neon">
               {pad(index + 1)} / {pad(total)}
@@ -60,7 +60,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
           </p>
           <h3
             id={`${project.slug}-name`}
-            className="wk-reveal font-display text-[clamp(2.4rem,5vw,4.8rem)] font-medium leading-[0.92] tracking-[-0.04em]"
+            className="wk-reveal font-display text-[clamp(2.4rem,5vw,4.8rem)] font-medium walk:text-[clamp(2.4rem,4vw,4.8rem)] leading-[0.92] tracking-[-0.04em]"
           >
             {project.name}
           </h3>
@@ -69,7 +69,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
           {/* The refusal band. The only place on the site the hazard stripe appears. */}
           <div className="wk-reveal overflow-hidden rounded-2xl border border-line bg-ink-2">
             <div className="hazard hazard-live h-2" aria-hidden="true" />
-            <div className="p-5">
+            <div className="p-5 walk:p-4">
               <p className="label flex items-center gap-2 text-neon">
                 <Ban size={13} aria-hidden="true" /> Refuses
               </p>

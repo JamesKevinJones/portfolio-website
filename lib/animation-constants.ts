@@ -101,9 +101,9 @@ export const MQ = {
    * Horizontal pinned walkthrough: wide AND tall enough that one project panel fits a
    * screen. Must match the `walk` custom variant in app/globals.css exactly.
    */
-  walkthrough: "(min-width: 1024px) and (min-height: 700px)",
+  walkthrough: "(min-width: 1024px) and (min-height: 760px)",
   /** Everything the walkthrough query excludes. `not all and` negates the whole query. */
-  stacked: "not all and (min-width: 1024px) and (min-height: 700px)",
+  stacked: "not all and (min-width: 1024px) and (min-height: 760px)",
 } as const;
 
 /** Lenis defaults. lerp 0.1 = each frame closes 10% of the gap to the target. */
