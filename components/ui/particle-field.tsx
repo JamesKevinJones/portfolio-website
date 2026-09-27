@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/animation-constants";
 
 type ParticleFieldProps = {
@@ -186,6 +186,15 @@ export function ParticleField({
         setRunning();
       });
       io.observe(canvas);
+      // A ScrollTrigger pin on an ancestor (the hero) reparents it into a pin-spacer.
+      // Chrome then reports one 0×0, not-intersecting entry and never fires again, which
+      // parked the loop with a blank canvas. Re-observing after each refresh, once the
+      // pins are in place, gets a fresh entry that reflects what is really on screen.
+      const reobserve = () => {
+        io.unobserve(canvas);
+        io.observe(canvas);
+      };
+      ScrollTrigger.addEventListener("refresh", reobserve);
       document.addEventListener("visibilitychange", setRunning);
       if (animate && freezeEl) {
         freezeEl.addEventListener("pointerenter", onFreeze);
@@ -202,6 +211,7 @@ export function ParticleField({
         gsap.ticker.remove(tick);
         ro.disconnect();
         io.disconnect();
+        ScrollTrigger.removeEventListener("refresh", reobserve);
         document.removeEventListener("visibilitychange", setRunning);
         freezeEl?.removeEventListener("pointerenter", onFreeze);
         freezeEl?.removeEventListener("pointerleave", onThaw);

@@ -49,3 +49,22 @@ test("375px: hero rows and ticker never push the page sideways", async ({ page }
   expect(overflow.page).toBe(0);
   for (const r of overflow.rows) expect(r).toBeLessThanOrEqual(0);
 });
+
+test("the particle field keeps drawing after the hero pin is measured", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  // Painted pixels plus a position-weighted checksum: changes when the dots move.
+  const paint = () =>
+    page.locator("#top canvas").evaluate((c: HTMLCanvasElement) => {
+      const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
+      let n = 0;
+      let sum = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i]) (n++, (sum = (sum + i * d[i]) % 1e9));
+      return { n, sum };
+    });
+  await expect.poll(async () => (await paint()).n).toBeGreaterThan(1000);
+  const before = await paint();
+  await page.mouse.move(400, 300, { steps: 10 });
+  await page.mouse.move(700, 450, { steps: 10 });
+  await expect.poll(async () => (await paint()).sum).not.toBe(before.sum);
+});
