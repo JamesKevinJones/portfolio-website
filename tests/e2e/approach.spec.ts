@@ -46,3 +46,22 @@ test("rule heads keep their size while the list re-flows", async ({ page }) => {
   const during = await heads.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
   during.forEach((h, i) => expect(Math.abs(h - before[i])).toBeLessThan(1));
 });
+
+for (const reduce of [false, true]) {
+test(`toggling a rule re-measures every trigger below it${reduce ? " (reduced motion)" : ""}`, async ({ page }) => {
+  if (reduce) await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  await page.locator("#approach").scrollIntoViewIfNeeded();
+  await page.locator("#approach [data-rule-head]").nth(0).click(); // close R/01: the page shrinks
+  await page.waitForTimeout(900); // Flip runs 0.6s
+  // The contact chip hides once #contact's top reaches 85% of the screen. Park it at 70%:
+  // with stale triggers (measured before the page shrank) the chip would still be showing.
+  await page.evaluate(() => {
+    const top = document.querySelector("#contact")!.getBoundingClientRect().top + scrollY;
+    window.scrollTo(0, top - innerHeight * 0.7);
+  });
+  await page.waitForTimeout(500);
+  await expect(page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i })).toBeHidden();
+});
+}

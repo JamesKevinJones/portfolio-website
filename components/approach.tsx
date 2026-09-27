@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Flip, gsap, useGSAP } from "@/lib/gsap";
+import { Flip, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MQ } from "@/lib/animation-constants";
 import { PRINCIPLES } from "@/lib/projects";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -26,10 +26,16 @@ export function Approach() {
     () => {
       const state = snapshot.current;
       snapshot.current = null;
-      if (!state || window.matchMedia(MQ.reduce).matches) return;
+      if (!state) return;
+      // Opening or closing a story changes the page height, so every trigger below this
+      // list (About, the footer headline, the contact chip) must be re-measured.
+      if (window.matchMedia(MQ.reduce).matches) {
+        ScrollTrigger.refresh();
+        return;
+      }
       // power3.out over 0.6s: rows move quickly then settle, no overshoot, so the list
-      // reads as re-flowing rather than bouncing.
-      Flip.from(state, { duration: DURATION.base, ease: EASE.out });
+      // reads as re-flowing rather than bouncing. Refresh once the rows have landed.
+      Flip.from(state, { duration: DURATION.base, ease: EASE.out, onComplete: () => ScrollTrigger.refresh() });
       // The story fades up just behind the rows so the eye lands on it last.
       gsap.from(root.current!.querySelectorAll("[data-rule-body]"), {
         opacity: 0,
