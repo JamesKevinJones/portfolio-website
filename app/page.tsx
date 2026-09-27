@@ -10,7 +10,11 @@ export default function Home() {
     <>
       <Hero />
       {/* The six refusal headlines, verbatim, as a teaser for the walkthrough. */}
-      <VelocityMarquee items={PROJECTS.map((p) => p.refuses.headline)} className="my-16 md:my-24" />
+      <div className="my-16 md:my-24">
+        <hr className="rule-fade" />
+        <VelocityMarquee items={PROJECTS.map((p) => p.refuses.headline)} />
+        <hr className="rule-fade" />
+      </div>
       <Work />
       <Approach />
       <About />

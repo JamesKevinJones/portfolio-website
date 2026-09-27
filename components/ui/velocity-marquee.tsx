@@ -85,7 +85,7 @@ export function VelocityMarquee({ items, speed = 1.6, className = "" }: Velocity
   );
 
   return (
-    <div ref={root} data-marquee className={`overflow-hidden border-y border-line py-6 ${className}`}>
+    <div ref={root} data-marquee className={`overflow-hidden py-6 ${className}`}>
       <div
         ref={track}
         className="flex w-max font-display text-[clamp(1.8rem,5vw,4.5rem)] font-medium leading-none tracking-[-0.03em] will-change-transform motion-reduce:w-full motion-reduce:flex-wrap"

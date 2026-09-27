@@ -4,6 +4,7 @@ import "./globals.css";
 import { LenisProvider } from "@/components/lenis-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ContactChip } from "@/components/ui/contact-chip";
 import { SITE_URL, PROFILE } from "@/lib/site";
 
 const space = Space_Grotesk({
@@ -100,6 +101,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
           <main id="main">{children}</main>
           <SiteFooter />
+          <ContactChip />
         </LenisProvider>
       </body>
     </html>

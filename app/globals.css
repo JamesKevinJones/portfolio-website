@@ -85,6 +85,21 @@
     background-size: 220px 220px;
   }
 
+  /*
+    Edge-fade hairline, adapted from cred.club's section borders and recoloured to bone:
+    brightest in the middle, dissolving into the page at both ends. Static.
+  */
+  .rule-fade {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklab, var(--color-bone) 22%, transparent) 50%,
+      transparent
+    );
+  }
+
   /* 48px mesh for stage panels. */
   .mesh {
     background-image:

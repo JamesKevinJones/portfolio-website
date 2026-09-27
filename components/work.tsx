@@ -55,8 +55,10 @@ export function Work() {
               ScrollTrigger.create({
                 trigger: stageOf(panel),
                 start: "top 70%",
-                once: true,
+                // Replays when the visitor scrolls back up to it (CRED-style fold reset);
+                // runScene kills any run still in flight, so re-entry never stacks.
                 onEnter: () => runScene(stageOf(panel)),
+                onEnterBack: () => runScene(stageOf(panel)),
               });
             });
             return;
@@ -117,14 +119,15 @@ export function Work() {
                 },
               });
             }
-            // Play once when the panel's left edge passes 55% of the screen, i.e. when it
+            // Play when the panel's left edge passes 55% of the screen, i.e. when it
             // owns most of the viewport. Panel one is already there at pin start.
             ScrollTrigger.create({
               trigger: panel,
               containerAnimation: scroller,
               start: "left 55%",
-              once: true,
+              // Replays on the way back too (onEnterBack); runScene kills a run in flight.
               onEnter: () => runScene(stageOf(panel)),
+              onEnterBack: () => runScene(stageOf(panel)),
             });
           });
 
