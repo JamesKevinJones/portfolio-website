@@ -16,7 +16,9 @@ export default function Home() {
         <hr className="rule-fade" />
       </div>
       <Work />
+      <hr className="rule-fade" />
       <Approach />
+      <hr className="rule-fade" />
       <About />
     </>
   );

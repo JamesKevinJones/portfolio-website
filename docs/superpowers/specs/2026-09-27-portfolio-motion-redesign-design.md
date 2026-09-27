@@ -66,7 +66,7 @@ Velocity marquee of the six refusal headlines, verbatim ("It won't upload your
 photo." ...), alternating solid and outline, speed and skew follow scroll velocity.
 
 ### 3. Work — pinned walkthrough, one project per screen
-- Desktop (≥1024 wide and ≥700 tall, motion allowed): the section pins and vertical
+- Desktop (≥1024 wide and ≥760 tall, motion allowed; raised from 700 during the build, when one panel overflowed at 1024×700): the section pins and vertical
   scroll drives a horizontal track of six panels, with a rolling 01–06 counter and
   progress rail.
 - Every other viewport, and reduced motion: a vertical list of the same panels.
@@ -95,13 +95,15 @@ one opens its story and source file; the rows below glide down (GSAP Flip, trans
 only). The first is open by default.
 
 ### 5. About
-Existing copy. The portrait is a masked curtain reveal on scroll. Hover (or tap) the
-portrait to swap the formal headshot for the mural portrait, which is in the repo but
-unused today. Expo photo below it. The stack list reads as mono rows.
+Existing copy, brightening word by word as it scrolls (ink reveal, see below). The
+portrait is a masked curtain reveal on scroll. On a fine pointer, a lens over the
+portrait shows the mural portrait (in the repo but unused today) under the cursor;
+pressing or tapping swaps the whole photo. Expo photo below it. The stack list reads as mono rows.
 
 ### 6. Contact (footer)
 "Open to internships and graduate roles." in masked kinetic lines. A magnetic pill copies
-the email to the clipboard, and its label rolls to "Copied". Ghost magnetic buttons go to
+the email to the clipboard, and its label rolls to "Copied". A floating chip with the
+same action follows the visitor from Work until this section arrives. Ghost magnetic buttons go to
 GitHub and LinkedIn. The bottom row holds the name, Chennai time, "Built with Next.js,
 GSAP and Lenis" and a link back to the top.
 
@@ -114,6 +116,31 @@ GSAP and Lenis" and a link back to the top.
 - The Vercel URL does not change. Work lands through a PR; merging to `main` deploys.
 - `npm run lint` and `npm run build` pass. Playwright end-to-end tests are added
   (the repo had no runner) and cover the checks `docs/VERIFY.md` asked for by hand.
+
+## Additions from the CRED research (2026-09-27, Kevin approved)
+
+Patterns taken from cred.club and rebuilt in the Motion Kit language (transform and
+opacity only, contrast-safe, reduced-motion aware). Full reasoning:
+`/mnt/project-files/cred-research/cred-design-framework-research.md`; code:
+`/mnt/project-files/cred-research/components/`.
+
+- **About portrait lens** (`components/ui/pointer-lens.tsx`): on fine pointers the mural
+  portrait shows through a round lens that follows the cursor and sweeps once as a hint
+  when the portrait first scrolls in. The click/Enter toggle still swaps the whole photo
+  (keyboard, touch, reduced motion). Replaces the hover crossfade.
+- **About ink reveal** (`components/ui/ink-reveal.tsx`): the about paragraphs brighten
+  word by word as they scroll through. Text is bone; unread words sit at 0.5 opacity
+  (about 4.7:1 on ink). Reduced motion shows plain paragraphs.
+- **Contact chip** (`components/ui/contact-chip.tsx`, `lib/use-copy-email.ts`): a fixed
+  glass "Copy email" pill, bottom-right, visible from Work until Contact arrives. The
+  footer's copy button uses the same hook.
+- **Edge-fade rules** (`.rule-fade`): 1px hairlines that fade out at both ends, between
+  sections and above and below the refusal ticker.
+- **Scenes replay on return:** a project scene plays again when you scroll back to its
+  panel (`onEnterBack`), not only the first time.
+
+Not taken from CRED, on purpose: its serif display type, sharp corners, pure black with
+no accent, video and image-sequence sections, rating band and card rail.
 
 ## Out of scope
 New projects, new copy beyond button verbs, a blog, CMS, analytics, WebGL/Three.js

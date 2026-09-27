@@ -16,6 +16,7 @@
 - Read `node_modules/next/dist/docs/` for any Next API you are unsure of (AGENTS.md: "This is NOT the Next.js you know").
 - Copy: every `refuses` headline and detail, every `facts` entry and every principle is used verbatim from `lib/projects.ts`. New copy is limited to button verbs, section labels and scene labels made of words already in that project's blurb or refusal detail. No invented numbers.
 - Hazard striping (`.hazard`) appears on the refusal band and nowhere else.
+- CRED additions (Kevin approved, 2026-09-27): the contact chip, ink reveal, pointer lens, edge-fade rules and scene replay come from `/mnt/project-files/cred-research/` and are copied verbatim. They follow the same motion and contrast rules as everything else; what was not taken from cred.club is recorded in `docs/DECISIONS.md` (Task 10).
 - Tokens (exact): ink `#0a0a0b`, ink-2 `#111113`, ink-3 `#18181b`, line `#26262a`, bone `#ededea`, mute `#8b8b92`, neon `#c8ff2e`, neon-2 `#8a6bff`. Dark only.
 - Fonts: Space Grotesk (display and body) and JetBrains Mono (labels), both through `next/font/google`.
 - Motion: all GSAP inside `useGSAP` (or its `contextSafe`) with `gsap.matchMedia`; animate only x, y, xPercent, yPercent, scale, scaleX, scaleY, rotation, opacity; eases from `EASE` in `lib/animation-constants.ts`; `ease: "none"` only on scrubbed timelines; comment every ease choice and every trigger start/end. Markup is the final state; animate with `from`/`fromTo`.
@@ -32,8 +33,10 @@
 1. **Reduced motion.** A visitor with `prefers-reduced-motion: reduce` sees all six projects as a readable list, every scene in its final "refused" pose, no pinned sections, and the Try buttons still announce the refusal. (Tests: Task 4, Task 6, Task 10.)
 2. **Phone width (375px).** Giant hero type, the marquee and the horizontal track are the likeliest things to push the page sideways; the page must never scroll horizontally and no hero row may be clipped. (Tests: Task 4, Task 10.)
 3. **Keyboard inside the pinned track.** Tabbing to a link in panel 6 while the track is translated must bring panel 6 on screen, not leave focus on an invisible element. (Test: Task 6.)
-4. **Short laptop screens.** At 1024×700 every panel's content must fit its screen; below that height the list layout takes over. (Test: Task 6.)
+4. **Short laptop screens.** At 1024×760 every panel's content must fit its screen; below that height the list layout takes over. (Test: Task 6. The floor was 700 in the first draft; see the ledger ruling.)
 5. **Mashing the Try button.** Five fast clicks must leave the scene in its final pose, the status saying "Refused ×5.", and no stacked or half-finished timelines. (Test: Task 5.)
+6. **The portrait lens stays registered.** Moving the pointer into each corner of the About portrait, the mural seen through the lens lines up with the headshot under it, including while the curtain is still scrubbing its scale. (Manual check, Task 10.)
+7. **The contact chip never covers a Try button.** On a 375×667 phone, the fixed chip bottom-right must not sit over any panel's Try pill at the moment that pill is in view. (Test: Task 10.)
 
 ---
 
@@ -49,6 +52,7 @@ lib/
   gsap.ts                     CREATE   copied from next-motion-starter (plugin registration)
   projects.ts                 MODIFY   drop accents, add `attempt`, typed slugs, STACK moved here
   site.ts                     unchanged
+  use-copy-email.ts           CREATE   CRED addition: shared clipboard hook (footer + chip)
 components/
   lenis-provider.tsx          CREATE   copied from next-motion-starter, replaces smooth-scroll.tsx
   smooth-scroll.tsx           DELETE
@@ -57,6 +61,9 @@ components/
   ui/particle-field.tsx       CREATE   ported from motion-kit + freeze target
   ui/velocity-marquee.tsx     CREATE   ported from motion-kit
   ui/local-time.tsx           CREATE   Chennai clock via useSyncExternalStore
+  ui/contact-chip.tsx         CREATE   CRED addition: floating copy-email pill (Work → Contact)
+  ui/ink-reveal.tsx           CREATE   CRED addition: words brighten as a paragraph scrolls
+  ui/pointer-lens.tsx         CREATE   CRED addition: transform-only loupe over a second image
   scenes/starmatch.tsx        CREATE   scene + play()
   scenes/frontier.tsx         CREATE
   scenes/job-autopilot.tsx    CREATE
@@ -2610,6 +2617,30 @@ git commit -m "feat: pinned horizontal walkthrough with keyboard-safe focus"
 
 ---
 
+### Task 6b: CRED additions to the sections already built (done, commit 7b74e18)
+
+Kevin asked (2026-09-27) for the cred.club research to be part of the final plan. Tasks 1–6
+were already committed, so these landed as one additive commit rather than by rewriting
+those tasks. Recorded here so the plan matches the branch.
+
+**Files:**
+- Create (verbatim from `/mnt/project-files/cred-research/`): `lib/use-copy-email.ts`, `components/ui/contact-chip.tsx`, `components/ui/ink-reveal.tsx`, `components/ui/pointer-lens.tsx`
+- Modify: `app/globals.css` (`.rule-fade` in `@layer components`), `app/layout.tsx` (`<ContactChip />` after `<SiteFooter />`), `app/page.tsx` (fade rules around the ticker and between sections), `components/ui/velocity-marquee.tsx` (drops its own `border-y`; the fade rules replace it), `components/work.tsx` (scene triggers `onEnter` + `onEnterBack`, no `once`)
+- Test: `tests/e2e/contact-chip.spec.ts`
+
+**What each does:**
+- **Edge-fade rules.** `.rule-fade` is a 1px hairline, transparent → bone 22% → transparent. Above and below the refusal ticker, and between Work, Rules and About. Static.
+- **Contact chip.** Fixed glass pill bottom-right, "Copy email". Shows once `#work` enters, hides once `#contact` reaches 85% of the screen, so it never duplicates a visible action. Hidden means `autoAlpha: 0`, so it also leaves the tab order.
+- **Scenes replay on return.** `runScene` already kills a run in flight and the Try counter counts clicks only, so replays cannot stack or inflate "Refused ×N".
+
+**Test** (`tests/e2e/contact-chip.spec.ts`; locators scoped to `.fixed` because the footer's button shares the name):
+- The chip is hidden on the hero, visible 200px into `#work`, hidden again at the bottom of the page.
+- Clicking it puts `PROFILE.email` on the clipboard and relabels it "Email copied".
+
+Verified: RED with the chip unmounted (2 failed), GREEN mounted (2 passed); hero, work-panels and walkthrough specs still 14/14.
+
+---
+
 ### Task 7: Rules as a Flip accordion
 
 **Files:**
@@ -2788,14 +2819,14 @@ git commit -m "feat: rules as a Flip accordion"
 
 ---
 
-### Task 8: About with a curtain reveal and a portrait you can swap
+### Task 8: About with a curtain reveal, a portrait lens and ink-reveal copy
 
 **Files:**
 - Rewrite: `components/about.tsx`
 - Test: `tests/e2e/about.spec.ts`
 
 **Interfaces:**
-- Consumes: `STACK` (Task 2), `PROFILE`; `SectionHeading`; `gsap`, `useGSAP`; `DURATION`, `EASE`, `MQ`, `SCROLL`, `STAGGER`.
+- Consumes: `STACK` (Task 2), `PROFILE`; `SectionHeading`; `PointerLens`, `InkReveal` (Task 6b); `gsap`, `useGSAP`; `DURATION`, `EASE`, `MQ`, `SCROLL`, `STAGGER`.
 - Produces: `section#about`; `button[aria-pressed]` named "…Swap photo"; `[data-testid="portrait-mural"]`.
 
 - [ ] **Step 1: Write the failing test**
@@ -2830,12 +2861,40 @@ test("photos are revealed by scrolling, not left hidden", async ({ page }) => {
     .poll(async () => curtain.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f))
     .toBeLessThan(5);
 });
+
+test("fine pointer: a lens opens over the portrait and closes when you leave", async ({ page }) => {
+  await page.goto("/#about");
+  await expect(page.getByTestId("local-time")).toHaveText(/\d/); // hydrated
+  const frame = page.getByRole("button", { name: /swap photo/i });
+  const lens = frame.locator("div.rounded-full[aria-hidden='true']");
+  await frame.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(2400); // let the one-off hint sweep finish
+  const box = (await frame.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+  await expect(lens).toBeVisible();
+  await page.mouse.move(box.x - 60, box.y - 60, { steps: 4 });
+  await expect(lens).toBeHidden();
+  // Hovering alone never swaps the whole photo; only a press does.
+  await expect(page.getByTestId("portrait-mural")).toHaveCSS("opacity", "0");
+});
+
+test("about copy is bone and brightens word by word as it scrolls", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("local-time")).toHaveText(/\d/);
+  const first = page.locator("#about .ab-copy p").first();
+  await expect(first).toHaveCSS("color", "rgb(237, 237, 234)");
+  await first.scrollIntoViewIfNeeded();
+  const words = first.locator("div");
+  await expect.poll(() => words.count()).toBeGreaterThan(10);
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect.poll(() => words.last().evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
+});
 ```
 
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `npx playwright test tests/e2e/about.spec.ts`
-Expected: FAIL. No "Swap photo" button.
+Expected: FAIL. No "Swap photo" button, no `.ab-copy`.
 
 - [ ] **Step 3: Rewrite `components/about.tsx`**
 
@@ -2849,6 +2908,8 @@ import { DURATION, EASE, MQ, SCROLL, STAGGER } from "@/lib/animation-constants";
 import { STACK } from "@/lib/projects";
 import { PROFILE } from "@/lib/site";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { InkReveal } from "@/components/ui/ink-reveal";
+import { PointerLens } from "@/components/ui/pointer-lens";
 
 export function About() {
   const root = useRef<HTMLElement>(null);
@@ -2888,22 +2949,24 @@ export function About() {
 
       <div className="mt-16 grid gap-14 md:mt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
         <div>
-          <div className="max-w-2xl space-y-5 text-lg leading-relaxed text-mute">
-            <p>
+          {/* Bone, not mute: InkReveal holds unread words at 0.5 opacity (≈4.7:1, the old
+              mute) and lights them to full bone as they scroll past. Reduced motion: plain bone. */}
+          <div className="ab-copy max-w-2xl space-y-5 text-lg leading-relaxed text-bone">
+            <InkReveal>
               I’m Kevin — a third-year computer science engineering student at SRM Institute of
               Science and Technology, Ramapuram, working out of Chennai.
-            </p>
-            <p>
+            </InkReveal>
+            <InkReveal>
               Most of what I build is retrieval, evaluation and automation: the machinery that
               decides whether an answer is good enough to show someone. That machinery is where
               the failures live, so it’s where I spend the time — writing the gate, the benchmark
               and the rejection log before the interface that sits on top.
-            </p>
-            <p>
+            </InkReveal>
+            <InkReveal>
               I write the reasoning down as I go. Every project here carries a decisions file
               explaining why it works the way it does, which is the only reason the rules in the
               section above are quotable.
-            </p>
+            </InkReveal>
           </div>
 
           <dl className="ab-stack mt-12 border-t border-line">
@@ -2925,26 +2988,34 @@ export function About() {
             className="ab-frame group relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-line bg-ink-2"
           >
             <div className="ab-curtain absolute inset-0 overflow-hidden">
+              {/* One wrapper for the curtain's counter-move; the lens inside measures its own
+                  box, so the curtain's scale never knocks the two photos out of register.
+                  Fine pointers: the mural shows through a lens that follows the cursor (and
+                  sweeps once as a hint). Press/Enter/tap swaps the whole photo via `open`. */}
               <div className="ab-img absolute inset-0">
-                <Image
-                  src="/images/kevin-headshot-formal.jpg"
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              {/* CSS transitions opacity only; GSAP owns this element's transform. */}
-              <div
-                data-testid="portrait-mural"
-                className={`ab-img absolute inset-0 transition-opacity duration-500 ease-expo-out [@media(hover:hover)]:group-hover:opacity-100 ${mural ? "opacity-100" : "opacity-0"}`}
-              >
-                <Image
-                  src="/images/kevin-portrait-mural.jpg"
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
-                  className="object-cover"
+                <PointerLens
+                  hint
+                  open={mural}
+                  revealTestId="portrait-mural"
+                  className="h-full w-full"
+                  base={
+                    <Image
+                      src="/images/kevin-headshot-formal.jpg"
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 40vw, 100vw"
+                      className="object-cover"
+                    />
+                  }
+                  reveal={
+                    <Image
+                      src="/images/kevin-portrait-mural.jpg"
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 40vw, 100vw"
+                      className="object-cover"
+                    />
+                  }
                 />
               </div>
             </div>
@@ -2976,7 +3047,7 @@ export function About() {
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `npx playwright test tests/e2e/about.spec.ts`
-Expected: 2 passed.
+Expected: 4 passed.
 
 - [ ] **Step 5: Lint, build, commit**
 
@@ -2984,7 +3055,7 @@ Expected: 2 passed.
 npm run lint
 npm run build
 git add -A
-git commit -m "feat: about section with curtain reveals and a swappable portrait"
+git commit -m "feat: about section with curtain reveals, portrait lens and ink-reveal copy"
 ```
 
 ---
@@ -2996,7 +3067,7 @@ git commit -m "feat: about section with curtain reveals and a swappable portrait
 - Test: `tests/e2e/contact.spec.ts`
 
 **Interfaces:**
-- Consumes: `MagneticButton`, `LocalTime` (Task 3); `GithubMark`, `LinkedinMark`; `PROFILE`; `gsap`, `SplitText`, `useGSAP`; `DURATION`, `EASE`, `MQ`, `STAGGER`.
+- Consumes: `MagneticButton`, `LocalTime` (Task 3); `useCopyEmail` (Task 6b); `GithubMark`, `LinkedinMark`; `PROFILE`; `gsap`, `SplitText`, `useGSAP`; `DURATION`, `EASE`, `MQ`, `STAGGER`.
 - Produces: `footer#contact`; a button named "Copy email address" that becomes "Email copied".
 
 - [ ] **Step 1: Write the failing test**
@@ -3010,8 +3081,11 @@ import { PROFILE } from "../../lib/site";
 test("copy email puts the address on the clipboard and says so", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/");
-  await page.getByRole("button", { name: "Copy email address" }).click();
-  await expect(page.getByRole("button", { name: "Email copied" })).toBeVisible();
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/); // hydrated
+  // Scoped to the footer: the floating contact chip's button shares this name.
+  const footer = page.locator("footer#contact");
+  await footer.getByRole("button", { name: "Copy email address" }).click();
+  await expect(footer.getByRole("button", { name: "Email copied" })).toBeVisible();
   await expect(page.locator("#contact [role='status']")).toHaveText("Email address copied to clipboard");
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(PROFILE.email);
 });
@@ -3036,32 +3110,20 @@ Expected: FAIL. No "Copy email address" button.
 ```tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { GithubMark, LinkedinMark } from "@/components/brand-icons";
 import { PROFILE } from "@/lib/site";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MQ, STAGGER } from "@/lib/animation-constants";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { LocalTime } from "@/components/ui/local-time";
+import { useCopyEmail } from "@/lib/use-copy-email";
 
 export function SiteFooter() {
   const root = useRef<HTMLElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(PROFILE.email);
-      setCopied(true);
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => setCopied(false), 2200);
-    } catch {
-      // Clipboard blocked (insecure context or permissions): hand off to the mail client.
-      window.location.href = `mailto:${PROFILE.email}`;
-    }
-  };
+  // Same hook as the floating contact chip, so both copy and relabel identically.
+  const { copied, copy } = useCopyEmail();
 
   useGSAP(
     () => {
@@ -3146,7 +3208,7 @@ export function SiteFooter() {
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npx playwright test tests/e2e/contact.spec.ts tests/e2e/header.spec.ts`
+Run: `npx playwright test tests/e2e/contact.spec.ts tests/e2e/header.spec.ts tests/e2e/contact-chip.spec.ts`
 Expected: all passed. (The header test's `local-time` locator is scoped to the header, so the footer's second clock does not collide.)
 
 - [ ] **Step 5: Lint, build, commit**
@@ -3176,6 +3238,7 @@ Create `tests/e2e/page.spec.ts`:
 
 ```ts
 import { test, expect, type Page } from "@playwright/test";
+import { PROJECTS } from "../../lib/projects";
 
 async function lowContrast(page: Page) {
   return page.evaluate(() => {
@@ -3224,6 +3287,23 @@ test("reduced motion: whole page, nothing pinned, no Lenis, all sections present
   await expect(page.locator("html.lenis")).toHaveCount(0);
   for (const id of ["top", "work", "approach", "about", "contact"]) {
     await expect(page.locator(`#${id}`)).toBeVisible();
+  }
+});
+
+test("375×667: the contact chip never sits on a Try button", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  const chip = page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i });
+  for (const [i, p] of PROJECTS.entries()) {
+    const btn = page.locator("#work article.wk-panel").nth(i).getByRole("button", { name: p.attempt });
+    // Park the Try pill at the very bottom of the screen: the worst case for a bottom-right chip.
+    await btn.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().bottom + window.scrollY - innerHeight + 4));
+    await page.waitForTimeout(400);
+    if (!(await chip.isVisible())) continue;
+    const [a, b] = [(await btn.boundingBox())!, (await chip.boundingBox())!];
+    const overlap = a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+    expect(overlap, `chip covers ${p.name}'s Try button`).toBe(false);
   }
 });
 
@@ -3345,9 +3425,18 @@ the "quotable from source" rule still holds.
 
 ## The walkthrough only pins when a panel fits one screen (2026-09-27)
 
-Horizontal pinning needs one project per screen. Below 1024×700, or with reduced
+Horizontal pinning needs one project per screen. Below 1024×760, or with reduced
 motion, the same panels render as a list. Clipping or hiding copy to make a panel fit
-was rejected.
+was rejected. (The plan said 700px; at 1024×700 the Frontier panel overflowed by
+100px, so the floor was raised to 760.)
+
+## Borrowed from cred.club (2026-09-27)
+
+Scroll ink reveal, pointer lens, persistent contact chip, edge-fade rules, and scenes
+that replay when you scroll back. Rebuilt on transforms and opacity with
+contrast-safe resting states; CRED's serif, pure black, video folds and sharp corners
+were deliberately not taken. Research: the CRED design-framework study in the project
+files.
 
 ## Playwright end-to-end tests (2026-09-27)
 
@@ -3394,6 +3483,7 @@ Expected: all pass. Then open the dev server and do the checks no test can do, n
 1. Chrome DevTools Performance, 4× CPU throttle, scroll hero → contact: no long tasks over 50ms during the walkthrough scrub; frames stay green.
 2. Hover "stop." — the particle field freezes; leave — it resumes.
 3. Magnetic buttons spring back with overshoot; on a touch device (DevTools device mode) they are static and tappable.
+4. About portrait: move the pointer into each of the four corners; the mural inside the lens lines up with the headshot under it, also while the curtain is mid-scrub.
 
 - [ ] **Step 8: Commit, push and open a draft PR**
 
@@ -3408,7 +3498,16 @@ Open a draft PR `redesign/motion-kit` → `main` titled "Motion Kit redesign: re
 
 - **Before:** a light/dark neo-brutalist page with a two-column grid of project cards, each stating its refusal.
 - **After:** a dark Motion Kit page where each project gets a screen of its own in a pinned walkthrough, acts out its refusal in a small animated scene, and has a button that asks it to do the forbidden thing anyway.
-- **How:** Motion Kit tokens and the next-motion-starter foundation, six SVG scenes with GSAP timelines, Flip accordion for the rules, Playwright suite for the checks VERIFY.md used to ask for by hand.
+- **How:** Motion Kit tokens and the next-motion-starter foundation, six SVG scenes with GSAP timelines, Flip accordion for the rules, four patterns borrowed from cred.club (portrait lens, ink-reveal copy, floating copy-email chip, edge-fade rules), Playwright suite for the checks VERIFY.md used to ask for by hand.
 - The manual check results from Step 7.
 
 Assign and request review from JamesKevinJones. Do not merge: merging deploys to the printed URL, and that is Kevin's call after he has seen the Vercel preview.
+
+---
+
+## Addendum: CRED-derived components (2026-09-27, Kevin approved)
+
+Folded into the tasks above: Global Constraints, Review Focus 6–7, File Structure,
+Task 6b (what landed on the already-built sections), Task 8 (lens and ink reveal),
+Task 9 (shared copy hook) and Task 10 (chip placement test, DECISIONS entry). Research and
+source: `/mnt/project-files/cred-research/`.
