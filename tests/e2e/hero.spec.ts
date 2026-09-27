@@ -5,7 +5,7 @@ test("hero reads as one sentence to assistive tech", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
     "Systems that know when to stop.",
   );
-  await expect(page.locator("section#top .hero-stop")).toHaveText("stop.");
+  await expect(page.locator("#top .hero-stop")).toHaveText("stop.");
 });
 
 test("scrolling moves every row except the word stop.", async ({ page }) => {
@@ -29,7 +29,7 @@ test("scrolling moves every row except the word stop.", async ({ page }) => {
 test("reduced motion: no pin, no Lenis, final composition", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator("section#top")).toBeVisible();
+  await expect(page.locator("#top > section, #top .pin-spacer > section").first()).toBeVisible();
   await expect(page.locator(".pin-spacer")).toHaveCount(0);
   await expect(page.locator("html.lenis")).toHaveCount(0);
   // Marquee shows one copy only; the duplicate used for looping is hidden.

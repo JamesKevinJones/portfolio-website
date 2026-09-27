@@ -63,50 +63,53 @@ export function Hero() {
   );
 
   return (
-    <section
-      ref={root}
-      id="top"
-      className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden px-4 pb-10 pt-28 sm:px-6 md:px-10 md:pb-14"
-    >
-      <div className="hero-bg absolute inset-0 -z-10">
-        <ParticleField spacing={24} radius={190} freezeSelector=".hero-stop" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,var(--color-ink)_85%)]" />
-      </div>
-
-      <h1 className="font-display text-[clamp(2.6rem,11.5vw,11.5rem)] font-medium leading-[0.9] tracking-[-0.045em]">
-        <span className="sr-only">Systems that know when to stop.</span>
-        <span aria-hidden="true" className="block">
-          <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
-            <span className="hero-drift inline-block">Systems</span>
-          </span>
-          <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
-            <span className="hero-drift text-outline inline-block pl-[8vw]">that know</span>
-          </span>
-          <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
-            <span className="hero-drift inline-block">when to</span>{" "}
-            <span className="hero-stop inline-block cursor-default text-neon">stop.</span>
-          </span>
-        </span>
-      </h1>
-
-      <div className="hero-meta mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <p className="max-w-md text-lg leading-snug text-mute md:text-xl">
-          Six projects below. Each one is introduced by the thing it refuses to do, because
-          that’s the decision that took the thinking.
-        </p>
-        <div className="flex flex-wrap items-center gap-8">
-          <MagneticButton href="#work">
-            See what they refuse <span aria-hidden="true">↓</span>
-          </MagneticButton>
-          <p className="label text-mute">
-            {PROJECTS.length} projects · {LIVE_COUNT} deployed · graduating 2027
-            <span className="hidden [@media(hover:hover)_and_(pointer:fine)]:inline"> · hover “stop.”</span>
-          </p>
+    // #top sits on a wrapper outside the pin: on the pinned section it resolves to the
+    // pin's end (70% of a screen down), where the hero has already faded out.
+    <div id="top">
+      <section
+        ref={root}
+        className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden px-4 pb-10 pt-28 sm:px-6 md:px-10 md:pb-14"
+      >
+        <div className="hero-bg absolute inset-0 -z-10">
+          <ParticleField spacing={24} radius={190} freezeSelector=".hero-stop" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,var(--color-ink)_85%)]" />
         </div>
-      </div>
-      <p className="sr-only">
-        {PROFILE.name}, {PROFILE.place}, {PROFILE.study}.
-      </p>
-    </section>
+
+        <h1 className="font-display text-[clamp(2.6rem,11.5vw,11.5rem)] font-medium leading-[0.9] tracking-[-0.045em]">
+          <span className="sr-only">Systems that know when to stop.</span>
+          <span aria-hidden="true" className="block">
+            <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
+              <span className="hero-drift inline-block">Systems</span>
+            </span>
+            <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
+              <span className="hero-drift text-outline inline-block pl-[8vw]">that know</span>
+            </span>
+            <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
+              <span className="hero-drift inline-block">when to</span>{" "}
+              <span className="hero-stop inline-block cursor-default text-neon">stop.</span>
+            </span>
+          </span>
+        </h1>
+
+        <div className="hero-meta mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-md text-lg leading-snug text-mute md:text-xl">
+            Six projects below. Each one is introduced by the thing it refuses to do, because
+            that’s the decision that took the thinking.
+          </p>
+          <div className="flex flex-wrap items-center gap-8">
+            <MagneticButton href="#work">
+              See what they refuse <span aria-hidden="true">↓</span>
+            </MagneticButton>
+            <p className="label text-mute">
+              {PROJECTS.length} projects · {LIVE_COUNT} deployed · graduating 2027
+              <span className="hidden [@media(hover:hover)_and_(pointer:fine)]:inline"> · hover “stop.”</span>
+            </p>
+          </div>
+        </div>
+        <p className="sr-only">
+          {PROFILE.name}, {PROFILE.place}, {PROFILE.study}.
+        </p>
+      </section>
+    </div>
   );
 }
