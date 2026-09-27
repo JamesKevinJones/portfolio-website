@@ -10,7 +10,7 @@ const LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t-[3px]">
+    <footer id="contact" className="border-t-[3px]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h2 className="font-display text-3xl font-black sm:text-5xl">
           Open to internships
