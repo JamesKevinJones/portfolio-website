@@ -60,12 +60,24 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   // Only a real route change resets scroll. Lenis mounting after hydration must not, or
   // a deep link like /#about (and any scroll made before hydration) snaps back to the top.
   const lastPath = useRef(pathname);
+  const landed = useRef(false);
   useEffect(() => {
     if (lastPath.current !== pathname) {
       lastPath.current = pathname;
       lenis?.scrollTo(0, { immediate: true });
     }
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    const id = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      // Deep links: the browser jumped to the hash before pins inserted their spacers
+      // (the work walkthrough adds thousands of px above #about), so land on it again
+      // once, now that the layout is final.
+      if (landed.current || !window.location.hash) return;
+      const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+      if (!target) return;
+      landed.current = true;
+      if (lenis) lenis.scrollTo(target, { immediate: true });
+      else target.scrollIntoView();
+    });
     return () => cancelAnimationFrame(id);
   }, [pathname, lenis]);
 
