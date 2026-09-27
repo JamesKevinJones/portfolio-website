@@ -59,7 +59,11 @@ test("the particle field keeps drawing after the hero pin is measured", async ({
       const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
       let n = 0;
       let sum = 0;
-      for (let i = 3; i < d.length; i += 4) if (d[i]) (n++, (sum = (sum + i * d[i]) % 1e9));
+      for (let i = 3; i < d.length; i += 4) {
+        if (!d[i]) continue;
+        n++;
+        sum = (sum + i * d[i]) % 1e9;
+      }
       return { n, sum };
     });
   await expect.poll(async () => (await paint()).n).toBeGreaterThan(1000);
