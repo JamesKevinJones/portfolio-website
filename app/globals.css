@@ -1,205 +1,124 @@
 @import "tailwindcss";
 
 /*
-  Bind the `dark:` utility variant to the .dark class rather than Tailwind's
-  default prefers-color-scheme query.
-
-  Without this, the theme toggle moves data-theme and .dark while every
-  `dark:` utility keeps following the OS setting. On a machine set to dark,
-  switching the site to light left `dark:text-paper-dim` applied over the light
-  paper background — 1.14:1, text invisible. The toggle has to be the single
-  authority, and the pre-paint script sets .dark before first paint.
+  Motion Kit design language, Kevin's house style: monochrome ink, one neon accent,
+  grain and mesh for depth. Dark only, so there is no theme toggle to keep in sync and
+  no `dark:` variant in use anywhere.
 */
-@custom-variant dark (&:is(.dark *));
+@theme {
+  --color-ink: #0a0a0b;
+  --color-ink-2: #111113;
+  --color-ink-3: #18181b;
+  --color-line: #26262a;
+  --color-bone: #ededea;
+  --color-mute: #8b8b92;
+  --color-neon: #c8ff2e;
+  --color-neon-2: #8a6bff;
+
+  --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+
+  /* CSS mirrors of BEZIER in lib/animation-constants.ts, for hover transitions. */
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
 /*
-  Portfolio design language: neo-brutalism, carried over from StarMatch.
-
-  Hard 3px ink borders, hard offset shadows, no blur and no soft gradients on
-  any UI chrome. The one patterned surface on the site is the hazard band, and
-  it is reserved for a single job: stating what a system refuses to do. Keeping
-  that stripe rare is what makes it read as a warning label rather than decor.
+  Horizontal walkthrough layout. Must match MQ.walkthrough in
+  lib/animation-constants.ts: wide AND tall enough for one panel per screen, and only
+  when motion is allowed. Every other case gets the stacked list.
 */
-
-@theme {
-  /* Surfaces */
-  --color-paper: #f4f1ea;
-  --color-paper-dim: #e8e3d7;
-  --color-ink: #0b0b0b;
-  --color-ink-soft: #2e2c28;
-
-  /* Accents — high chroma, used flat and unblended. One per project. */
-  --color-acid: #ddf247;
-  --color-volt: #4d5bff;
-  --color-coral: #ff5c4d;
-  --color-mint: #4ee6a8;
-  --color-orchid: #d78dff;
-
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-body: var(--font-space), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
-
-  /* The brutalist offset shadow, at three weights */
-  --shadow-brut-sm: 3px 3px 0 0 var(--color-ink);
-  --shadow-brut: 6px 6px 0 0 var(--color-ink);
-  --shadow-brut-lg: 10px 10px 0 0 var(--color-ink);
-
-  --radius-brut: 2px;
+@custom-variant walk {
+  @media (min-width: 1024px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
 }
 
 @layer base {
-  :root {
-    --bg: var(--color-paper);
-    --fg: var(--color-ink);
-    --panel: #ffffff;
-    --line: var(--color-ink);
-    /* The hazard stripe's light colour. Inverted in dark mode so the band
-       stays a warning rather than turning into a black-on-black texture. */
-    --hazard-a: var(--color-ink);
-    --hazard-b: var(--color-acid);
-  }
-
-  /*
-    Dark mode inverts the paper but keeps the borders hard. Brutalism in the
-    dark means bright rules on near-black, not soft grey-on-grey.
-  */
-  :root[data-theme="dark"],
-  html.dark {
-    --bg: #121110;
-    --fg: #f4f1ea;
-    --panel: #1c1a18;
-    --line: #f4f1ea;
-    --hazard-a: #f4f1ea;
-    --hazard-b: var(--color-acid);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #121110;
-      --fg: #f4f1ea;
-      --panel: #1c1a18;
-      --line: #f4f1ea;
-      --hazard-a: #f4f1ea;
-      --hazard-b: var(--color-acid);
-    }
-  }
-
-  * {
-    border-color: var(--line);
-  }
-
   html {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     /* Lenis drives scrolling; native smooth scroll would fight it. */
     scroll-behavior: auto;
   }
 
   body {
-    background-color: var(--bg);
-    color: var(--fg);
-    font-family: var(--font-body);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    font-family: var(--font-display);
+    background:
+      radial-gradient(60vw 40vw at 85% -10%, color-mix(in oklab, var(--color-neon-2) 16%, transparent), transparent 70%),
+      radial-gradient(50vw 40vw at -10% 30%, color-mix(in oklab, var(--color-neon) 7%, transparent), transparent 70%),
+      var(--color-ink);
+    overflow-x: clip;
   }
 
   h1,
   h2,
-  h3,
-  h4 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 0.95;
+  h3 {
     text-wrap: balance;
   }
 
-  /* Visible, unmissable focus — brutalism has no excuse for poor a11y. */
-  :focus-visible {
-    outline: 3px solid var(--color-volt);
-    outline-offset: 3px;
+  ::selection {
+    background: var(--color-neon);
+    color: var(--color-ink);
   }
 
-  ::selection {
-    background: var(--color-acid);
-    color: var(--color-ink);
+  :focus-visible {
+    outline: 2px solid var(--color-neon);
+    outline-offset: 4px;
   }
 }
 
 @layer components {
-  /* The single primitive the whole UI is built from. */
-  .brut {
-    border: 3px solid var(--line);
-    border-radius: var(--radius-brut);
-    background: var(--panel);
-    box-shadow: var(--shadow-brut);
-  }
-
-  .brut-sm {
-    border: 3px solid var(--line);
-    border-radius: var(--radius-brut);
-    background: var(--panel);
-    box-shadow: var(--shadow-brut-sm);
-  }
-
-  /* Press-down interaction: the shadow collapses into the element. */
-  .brut-press {
-    transition:
-      transform 120ms cubic-bezier(0.2, 0, 0, 1),
-      box-shadow 120ms cubic-bezier(0.2, 0, 0, 1);
-  }
-
-  .brut-press:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 8px 8px 0 0 var(--line);
-  }
-
-  .brut-press:active {
-    transform: translate(3px, 3px);
-    box-shadow: 1px 1px 0 0 var(--line);
-  }
-
-  /*
-    Theme-toggle icons. Both are in the DOM; CSS picks one from the root's
-    theme so the button needs no React state and cannot flash the wrong glyph.
-  */
-  .theme-icon-sun {
-    display: none;
-  }
-  .theme-icon-moon {
-    display: block;
-  }
-
-  :root[data-theme="dark"] .theme-icon-sun,
-  :root.dark .theme-icon-sun {
-    display: block;
-  }
-  :root[data-theme="dark"] .theme-icon-moon,
-  :root.dark .theme-icon-moon {
-    display: none;
-  }
-
   .label {
     font-family: var(--font-mono);
     font-size: 0.6875rem;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
   }
 
+  /* Static film grain. Painted once, never animated. */
+  .grain {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+  }
+
+  /* 48px mesh for stage panels. */
+  .mesh {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--color-bone) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-bone) 6%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .text-outline {
+    -webkit-text-stroke: 1px var(--color-bone);
+    color: transparent;
+  }
+
+  /* SplitText masks clip at the line box; give descenders room without shifting layout. */
+  .split-pad > * {
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
+
   /*
-    Diagonal hazard stripes. The site's signature device: it marks the one line
-    on each project that states what the system will not do. Used nowhere else.
+    The refusal band's warning tape, recoloured neon on ink. Used on the refusal band
+    and nowhere else: the moment it becomes texture it stops reading as a warning.
   */
   .hazard {
     background-image: repeating-linear-gradient(
       45deg,
-      var(--hazard-a) 0 10px,
-      var(--hazard-b) 10px 20px
+      var(--color-neon) 0 10px,
+      var(--color-ink) 10px 20px
     );
   }
 
   /*
-    The stripe drifts one full period on hover, so the band reads as live tape
-    rather than a static fill. 20px matches the pattern period above, which is
-    what makes the loop seamless.
+    Drift one full period on panel hover so the tape reads as live. 28.284px is the
+    20px stripe period measured along the x axis (20 × √2), which makes the loop seamless.
   */
   @keyframes hazard-drift {
     to {
@@ -207,23 +126,14 @@
     }
   }
 
-  .group\/card:hover .hazard-live {
+  .group\/panel:hover .hazard-live {
     animation: hazard-drift 1.4s linear infinite;
-  }
-
-  /* Text set over the acid highlight in the hero. */
-  .mark {
-    background: var(--color-acid);
-    color: var(--color-ink);
-    padding: 0 0.12em;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
   }
 }
 
 /*
-  Every animation on this site is opt-out. The GSAP timelines check this query
-  too, but killing it at the CSS layer catches anything they missed.
+  Every animation is opt-out. The GSAP code branches on the same query, but killing
+  CSS animation here catches anything it missed.
 */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -232,6 +142,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }

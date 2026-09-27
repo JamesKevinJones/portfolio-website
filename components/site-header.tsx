@@ -1,6 +1,5 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
 import { GithubMark } from "@/components/brand-icons";
 import { PROFILE } from "@/lib/site";
 
@@ -11,23 +10,6 @@ const NAV = [
 ];
 
 export function SiteHeader() {
-  /**
-   * The theme lives in the DOM, not in React state.
-   *
-   * An inline script in the document applies it before first paint, so there
-   * is no flash of the wrong theme. Mirroring it into state here would only
-   * reintroduce that flash — state starts wrong and corrects after hydration —
-   * and force a setState inside an effect. The button toggles the attributes
-   * directly and CSS swaps the icon.
-   */
-  const toggle = () => {
-    const root = document.documentElement;
-    const next = root.dataset.theme !== "dark";
-    root.dataset.theme = next ? "dark" : "light";
-    root.classList.toggle("dark", next);
-    localStorage.setItem("kj-theme", next ? "dark" : "light");
-  };
-
   return (
     <header className="sticky top-0 z-50 border-b-[3px] bg-[var(--bg)]">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
@@ -53,17 +35,6 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Icons swap via CSS on the root’s data-theme, so no state is needed.
-            The label stays fixed so it doesn’t change under a screen reader. */}
-        <button
-          type="button"
-          onClick={toggle}
-          aria-label="Toggle light and dark theme"
-          className="brut-sm brut-press ml-auto p-2 md:ml-0"
-        >
-          <Moon size={18} aria-hidden className="theme-icon-moon" />
-          <Sun size={18} aria-hidden className="theme-icon-sun" />
-        </button>
 
         <a
           href={PROFILE.github}
