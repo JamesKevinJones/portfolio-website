@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight, Ban } from "lucide-react";
-import { PROJECTS, ACCENT_BG, ACCENT_FG, type Project } from "@/lib/projects";
+import { PROJECTS, type Project } from "@/lib/projects";
 
 function ProjectCard({ project }: { project: Project }) {
-  const { refuses, accent } = project;
+  const { refuses } = project;
 
   return (
     <article
@@ -16,14 +16,14 @@ function ProjectCard({ project }: { project: Project }) {
     >
       {/* Accent rule. One colour per project, so the grid is scannable by hue
           before a word is read. */}
-      <div className={`h-2 ${ACCENT_BG[accent]}`} aria-hidden />
+      <div className="h-2 bg-neon" aria-hidden />
 
       <div className="flex flex-1 flex-col p-5 sm:p-7">
         <p className="label flex items-center gap-2 text-ink-soft dark:text-paper-dim">
           {project.domain}
           <span aria-hidden>·</span>
           <span
-            className={`${ACCENT_BG[accent]} ${ACCENT_FG[accent]} px-1.5 py-0.5`}
+            className={`bg-neon text-ink px-1.5 py-0.5`}
           >
             {project.status}
           </span>
@@ -80,7 +80,7 @@ function ProjectCard({ project }: { project: Project }) {
               href={project.live}
               target="_blank"
               rel="noreferrer noopener"
-              className={`brut-sm brut-press label flex items-center gap-1.5 px-4 py-2.5 ${ACCENT_BG[accent]} ${ACCENT_FG[accent]}`}
+              className={`brut-sm brut-press label flex items-center gap-1.5 px-4 py-2.5 bg-neon text-ink`}
             >
               Live
               <ArrowUpRight size={14} aria-hidden />

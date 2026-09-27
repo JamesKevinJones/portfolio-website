@@ -1,13 +1,7 @@
 import Image from "next/image";
 import { PROFILE } from "@/lib/site";
+import { STACK } from "@/lib/projects";
 
-const STACK = [
-  ["Languages", "Python · TypeScript · SQL · C++"],
-  ["Frontend", "Next.js · React · Tailwind · GSAP · visx"],
-  ["Backend", "FastAPI · Node · Drizzle · SQLite · Postgres"],
-  ["AI", "RAG · reranking · embeddings · Bedrock · Gemini"],
-  ["Infra", "Vercel · Docker · GitHub Actions"],
-];
 
 export function About() {
   return (
