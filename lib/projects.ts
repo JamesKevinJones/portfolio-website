@@ -7,49 +7,34 @@
  * belong on the page.
  */
 
-export type Accent = "volt" | "coral" | "acid" | "mint" | "orchid";
+/** One key per project. Also the key into the scene registry in components/scenes. */
+export type SceneKey =
+  | "starmatch"
+  | "frontier-platform"
+  | "job-autopilot"
+  | "codeaut0"
+  | "job-rag"
+  | "memoryvault-ai";
 
 export type Project = {
-  slug: string;
+  slug: SceneKey;
   name: string;
   /** Mono eyebrow. Domain and shipping state — both are facts, not decoration. */
   domain: string;
   status: "Live" | "CLI";
   blurb: string;
   refuses: { headline: string; detail: string };
+  /**
+   * The Try button: a request for the one thing this system refuses to do. UI copy,
+   * not a claim: pressing it only replays the refusal quoted above. 22 characters max
+   * so the pill fits beside its status line on a phone.
+   */
+  attempt: string;
   /** Short measured facts. Numbers only where a real number exists. */
   facts: string[];
   stack: string[];
   live?: string;
   source: string;
-  accent: Accent;
-};
-
-/**
- * Accent classes are written out in full rather than interpolated — Tailwind
- * scans source text, so `bg-${accent}` would be stripped from the build.
- */
-export const ACCENT_BG: Record<Accent, string> = {
-  volt: "bg-volt",
-  coral: "bg-coral",
-  acid: "bg-acid",
-  mint: "bg-mint",
-  orchid: "bg-orchid",
-};
-
-/**
- * Foreground per accent, chosen by measured contrast rather than by eye.
- *
- * Only volt is dark enough to carry white text (4.93:1). Coral looks like it
- * should take white and does not — white on coral measures 3.05:1 and fails
- * AA, while ink on coral clears it at 6.46:1.
- */
-export const ACCENT_FG: Record<Accent, string> = {
-  volt: "text-white",
-  coral: "text-ink",
-  acid: "text-ink",
-  mint: "text-ink",
-  orchid: "text-ink",
 };
 
 export const PROJECTS: Project[] = [
@@ -65,13 +50,13 @@ export const PROJECTS: Project[] = [
       detail:
         "There is no endpoint to upload it to. The privacy claim is architectural rather than a promise on a policy page — adding a server-side inference path would mean deleting the property the project exists to demonstrate.",
     },
+    attempt: "Upload my photo",
     // 8/10, not "80%": ten probes put the 95% interval at roughly 49-94%, and
     // the repo's own gate is 60%. Quoting a rounder number would overstate it.
     facts: ["Euclidean, not cosine", "8/10 top-1 on held-out probes", "12 MB weights, lazy-loaded"],
     stack: ["Next.js 16", "TensorFlow.js", "face-api", "visx"],
     live: "https://starmatch-liard.vercel.app",
     source: "https://github.com/JamesKevinJones/starmatch",
-    accent: "volt",
   },
   {
     slug: "frontier-platform",
@@ -85,11 +70,11 @@ export const PROJECTS: Project[] = [
       detail:
         "Three independent floors gate every answer: IDF term coverage, reranker score, and a composite grounding score. Miss one and the service says which one it missed. On the committed golden set it refuses exactly the three unanswerable questions and none of the thirteen answerable ones.",
     },
+    attempt: "Answer anyway",
     facts: ["99 tests passing", "CI fails on a quality drop", "Runs offline, no API key"],
     stack: ["Python 3.12", "React", "TypeScript", "GitHub Actions"],
     live: "https://frontier-platform-lovat.vercel.app",
     source: "https://github.com/JamesKevinJones/frontier-platform",
-    accent: "coral",
   },
   {
     slug: "job-autopilot",
@@ -103,10 +88,10 @@ export const PROJECTS: Project[] = [
       detail:
         "Unattended form-fill means typing a real address into third-party forms and clicking irreversible controls. It also gets accounts restricted and trips ATS duplicate filters, which costs you the roles you wanted. The pipeline stops at a queue a human reads.",
     },
+    attempt: "Submit it for me",
     facts: ["1,341 postings scanned in a day", "6 hard gates", "2 dependencies"],
     stack: ["Python 3.11", "SQLite", "PyYAML"],
     source: "https://github.com/JamesKevinJones/job-autopilot",
-    accent: "acid",
   },
   {
     slug: "codeaut0",
@@ -120,11 +105,11 @@ export const PROJECTS: Project[] = [
       detail:
         "The defining behaviour is the validation, not the canvas. “Must have an End node”, “node is not connected” — every outstanding issue is numbered in the margin, and clicking one selects the offending node. Numbering appears only there, where the count is real.",
     },
+    attempt: "Run the workflow",
     facts: ["5 node types", "Click-to-locate issues", "Live structural validation"],
     stack: ["React 19", "React Flow", "Zustand", "MSW"],
     live: "https://codeaut0.vercel.app",
     source: "https://github.com/JamesKevinJones/CodeAut0",
-    accent: "mint",
   },
   {
     slug: "job-rag",
@@ -138,11 +123,11 @@ export const PROJECTS: Project[] = [
       detail:
         "Every job carries a lastSeen stamp and anything past 48 hours is pruned from the index on ingest. A job board that returns filled roles is worse than no job board, so the index is allowed to shrink.",
     },
+    attempt: "Show every listing",
     facts: ["Hybrid metadata → vector", "48-hour prune", "Portable JSON index"],
     stack: ["Next.js", "Gemini", "Vercel AI SDK", "Cheerio"],
     live: "https://job-rag-drab.vercel.app",
     source: "https://github.com/JamesKevinJones/job-rag",
-    accent: "orchid",
   },
   {
     slug: "memoryvault-ai",
@@ -156,11 +141,11 @@ export const PROJECTS: Project[] = [
       detail:
         "Chat history is ephemeral turns you scroll through to remind the model, and it is lost between sessions. Memory is distilled facts that survive across days and projects and are retrieved into every prompt. The vault is the product; chat is one way into it.",
     },
+    attempt: "Save the scrollback",
     facts: ["CockroachDB", "Bedrock Titan embeddings", "Cited retrieval"],
     stack: ["Next.js", "Drizzle ORM", "AWS Bedrock", "Auth.js"],
     live: "https://memoryvault-ai-delta.vercel.app",
     source: "https://github.com/JamesKevinJones/Memoryvault-ai",
-    accent: "volt",
   },
 ];
 
@@ -194,3 +179,12 @@ export const PRINCIPLES: { rule: string; body: string; source: string }[] = [
     source: "starmatch / docs/FRONTEND.md",
   },
 ];
+
+/** The stack list in About. Grouped by layer, plain text, no logos. */
+export const STACK = [
+  ["Languages", "Python · TypeScript · SQL · C++"],
+  ["Frontend", "Next.js · React · Tailwind · GSAP · visx"],
+  ["Backend", "FastAPI · Node · Drizzle · SQLite · Postgres"],
+  ["AI", "RAG · reranking · embeddings · Bedrock · Gemini"],
+  ["Infra", "Vercel · Docker · GitHub Actions"],
+] as const;

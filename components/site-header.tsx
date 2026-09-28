@@ -1,93 +1,64 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
-import { GithubMark } from "@/components/brand-icons";
-import { PROFILE } from "@/lib/site";
+import { useRef } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { EASE, MQ } from "@/lib/animation-constants";
+import { LocalTime } from "@/components/ui/local-time";
 
 const NAV = [
   { href: "#work", label: "Work" },
-  { href: "#approach", label: "Approach" },
+  { href: "#approach", label: "Rules" },
   { href: "#about", label: "About" },
+  { href: "#contact", label: "Contact" },
 ];
 
+/**
+ * Fixed mono header. mix-blend-difference keeps it legible over the neon stage panels
+ * and the photos without a background bar. The hairline under it is page progress.
+ */
 export function SiteHeader() {
-  /**
-   * The theme lives in the DOM, not in React state.
-   *
-   * An inline script in the document applies it before first paint, so there
-   * is no flash of the wrong theme. Mirroring it into state here would only
-   * reintroduce that flash — state starts wrong and corrects after hydration —
-   * and force a setState inside an effect. The button toggles the attributes
-   * directly and CSS swaps the icon.
-   */
-  const toggle = () => {
-    const root = document.documentElement;
-    const next = root.dataset.theme !== "dark";
-    root.dataset.theme = next ? "dark" : "light";
-    root.classList.toggle("dark", next);
-    localStorage.setItem("kj-theme", next ? "dark" : "light");
-  };
+  const bar = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
+    mm.add(MQ.motion, () => {
+      // Linear (EASE.scrub) because scroll position is already the easing. start 0 /
+      // end "max" spans the whole document; scrub 0.3 just smooths wheel steps.
+      gsap.fromTo(
+        bar.current,
+        { scaleX: 0 },
+        { scaleX: 1, ease: EASE.scrub, scrollTrigger: { start: 0, end: "max", scrub: 0.3 } },
+      );
+    });
+    return () => mm.revert();
+  });
 
   return (
-    <header className="sticky top-0 z-50 border-b-[3px] bg-[var(--bg)]">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <a
-          href="#main"
-          className="flex items-center gap-2 font-display text-lg font-black tracking-tight sm:text-xl"
-        >
-          <span className="inline-block border-[3px] border-[var(--line)] bg-acid px-2 py-0.5 text-ink">
-            KEVIN
-          </span>
-          <span>JONES</span>
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div className="label flex items-center justify-between gap-4 px-4 py-4 text-bone mix-blend-difference sm:px-6 md:px-10">
+        <a href="#top" className="flex items-center gap-2">
+          <span className="inline-block size-2 rounded-full bg-neon" aria-hidden="true" />
+          <span className="sm:hidden">KJ</span>
+          <span className="hidden sm:inline">Kevin Jones</span>
         </a>
-
-        <nav className="ml-auto hidden items-center gap-1 md:flex">
+        <span className="hidden md:inline">
+          Chennai · <LocalTime />
+        </span>
+        <nav aria-label="Sections" className="flex gap-4 sm:gap-8">
           {NAV.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="label border-[3px] border-transparent px-3 py-2 transition-colors hover:border-[var(--line)]"
-            >
+            <a key={item.href} href={item.href} className="opacity-70 transition-opacity hover:opacity-100">
               {item.label}
             </a>
           ))}
         </nav>
-
-        {/* Icons swap via CSS on the root’s data-theme, so no state is needed.
-            The label stays fixed so it doesn’t change under a screen reader. */}
-        <button
-          type="button"
-          onClick={toggle}
-          aria-label="Toggle light and dark theme"
-          className="brut-sm brut-press ml-auto p-2 md:ml-0"
-        >
-          <Moon size={18} aria-hidden className="theme-icon-moon" />
-          <Sun size={18} aria-hidden className="theme-icon-sun" />
-        </button>
-
-        <a
-          href={PROFILE.github}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="brut-sm brut-press label hidden items-center gap-2 bg-volt px-4 py-2 text-white sm:flex"
-        >
-          <GithubMark size={15} />
-          GitHub
-        </a>
       </div>
-
-      {/* Mobile nav row — the desktop nav collapses rather than hiding. */}
-      <nav className="flex overflow-x-auto border-t-[3px] md:hidden">
-        {NAV.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            className="label whitespace-nowrap px-4 py-2.5"
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
+      <div
+        ref={bar}
+        data-testid="scroll-progress"
+        aria-hidden="true"
+        style={{ transform: "scaleX(0)" }}
+        className="h-px origin-left bg-neon motion-reduce:hidden"
+      />
     </header>
   );
 }

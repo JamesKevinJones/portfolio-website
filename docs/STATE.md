@@ -1,30 +1,27 @@
 # Project State
 
-**Last updated:** 2026-08-15 by claude-code
+**Last updated:** 2026-09-27 by claude-code
 
 ## Where things stand
 
-Full redesign shipped. The site was rebuilt onto StarMatch's design
-architecture — neo-brutalist tokens, `.brut` primitive, Lenis+GSAP motion
-layering, theme-in-DOM — and reorganised around the "what it refuses to do"
-thesis.
+Redesign on branch `redesign/motion-kit`, open as a draft PR. The site moved from
+neo-brutalism to Kevin's Motion Kit look (dark, monochrome plus neon, grain). The
+thesis is unchanged, but each project now acts it out: a small SVG scene plays its
+refusal and a Try button asks for the forbidden thing. On screens at least 1024×760
+the work section is a pinned horizontal walkthrough; elsewhere it is a list. The rules
+are a Flip accordion. The About section has a pointer lens over the portrait and
+ink-reveal copy, and a floating chip copies the email; these patterns were borrowed
+from cred.club.
 
-Featured projects are now starmatch, frontier-platform, job-autopilot,
-CodeAut0, job-rag and Memoryvault-ai. The previous EvalGate/console design and
-its components are gone; `tailwind.config.ts` was dropped for native v4
-`@theme`.
-
-`job-autopilot` was published to GitHub as part of this work, with a fresh
-single-commit history so no personal data ever entered it.
+A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by hand.
 
 ## In progress
 
-- [ ] Nothing mid-edit.
+- [ ] Draft PR awaiting Kevin's review of the Vercel preview.
 
 ## The exact next step
 
-Nothing blocking. If the featured set changes, edit `lib/projects.ts` only —
-and keep the rule that every `refuses` line is quotable from its source repo.
+Review the Vercel preview on the PR, then merge to deploy.
 
 ## Open questions
 

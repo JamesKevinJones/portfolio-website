@@ -1,17 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SmoothScroll } from "@/components/smooth-scroll";
+import { LenisProvider } from "@/components/lenis-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ContactChip } from "@/components/ui/contact-chip";
 import { SITE_URL, PROFILE } from "@/lib/site";
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  variable: "--font-archivo",
-  weight: ["600", "700", "800", "900"],
-  display: "swap",
-});
 
 const space = Space_Grotesk({
   subsets: ["latin"],
@@ -19,10 +13,10 @@ const space = Space_Grotesk({
   display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-plex-mono",
-  weight: ["400", "500", "600"],
+  variable: "--font-jetbrains",
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -68,10 +62,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },
-    { media: "(prefers-color-scheme: dark)", color: "#121110" },
-  ],
+  themeColor: "#0a0a0b",
+  colorScheme: "dark",
 };
 
 const jsonLd = {
@@ -88,40 +80,29 @@ const jsonLd = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      // Required, not incidental: the theme script below writes data-theme and
-      // .dark onto <html> before React hydrates, so the client markup
-      // deliberately differs from the server's. Scoped to this element only.
-      suppressHydrationWarning
-      className={`${archivo.variable} ${space.variable} ${plexMono.variable}`}
-    >
+    <html lang="en" className={`${space.variable} ${jetbrains.variable}`}>
       <body>
-        {/*
-          Applies the stored or preferred theme before first paint. Doing this
-          in an effect instead would render the wrong theme for one frame on
-          every load.
-        */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('kj-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;var r=document.documentElement;r.dataset.theme=d?'dark':'light';r.classList.toggle('dark',d)}catch(e){}})()`,
-          }}
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <a
           href="#main"
-          className="brut-sm sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:bg-acid focus:px-4 focus:py-2 focus:text-ink"
+          className="label sr-only rounded-full bg-neon px-4 py-2 text-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100]"
         >
           Skip to content
         </a>
-        <SmoothScroll>
+        {/* Grain sits above everything but takes no input. 7% overlay is felt, not seen. */}
+        <div
+          aria-hidden="true"
+          className="grain pointer-events-none fixed inset-0 z-[60] opacity-[0.07] mix-blend-overlay"
+        />
+        <LenisProvider>
           <SiteHeader />
           <main id="main">{children}</main>
           <SiteFooter />
-        </SmoothScroll>
+          <ContactChip />
+        </LenisProvider>
       </body>
     </html>
   );

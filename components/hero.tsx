@@ -1,101 +1,115 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ArrowDown } from "lucide-react";
-import { GithubMark } from "@/components/brand-icons";
-import { PROFILE } from "@/lib/site";
+import { useRef } from "react";
+import { gsap, SplitText, useGSAP } from "@/lib/gsap";
+import { DURATION, EASE, MQ, SCROLL } from "@/lib/animation-constants";
 import { PROJECTS } from "@/lib/projects";
+import { PROFILE } from "@/lib/site";
+import { MagneticButton } from "@/components/ui/magnetic-button";
+import { ParticleField } from "@/components/ui/particle-field";
 
 const LIVE_COUNT = PROJECTS.filter((p) => p.status === "Live").length;
 
+/**
+ * The thesis as motion. On load, characters rise out of masks. On scroll the hero pins
+ * and every row slides away and dims, except "stop.", which holds still. Hovering
+ * "stop." freezes the particle field behind it. Reduced motion: the final composition,
+ * nothing pinned.
+ */
 export function Hero() {
   const root = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    /*
-      gsap.from() rather than gsap.to(): the markup is visible by default and
-      the timeline animates in from a hidden state. If this effect never runs —
-      JS disabled, a bundle error — the hero still reads. The opposite pattern
-      leaves an invisible page behind a broken script.
-    */
-    const mm = gsap.matchMedia();
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from("[data-boot]", {
-        y: 18,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.075,
+      mm.add(MQ.motion, () => {
+        const split = SplitText.create(".hero-row", { type: "chars", mask: "chars" });
+
+        // expo.out: characters launch fast and feather in, so the headline lands heavy
+        // without a slow tail. 0.028s per char sets a 30-char headline in ~0.85s.
+        const intro = gsap.timeline({ defaults: { ease: EASE.expo } });
+        intro
+          .from(split.chars, { yPercent: 115, rotate: 8, duration: DURATION.hero, stagger: 0.028 })
+          .from(".hero-meta > *", { y: 18, opacity: 0, duration: DURATION.slow, stagger: 0.07 }, 0.55)
+          .from(".hero-bg", { opacity: 0, scale: 1.08, duration: 2 }, 0);
+
+        // Pin from the hero's top at the viewport top for 70% of a screen of scroll.
+        // Linear eases (EASE.scrub): the scroll position is already the easing.
+        const out = gsap.timeline({
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top top",
+            end: "+=70%",
+            pin: true,
+            scrub: SCROLL.scrub,
+          },
+        });
+        gsap.utils.toArray<HTMLElement>(".hero-drift").forEach((el, i) => {
+          // Alternate directions so the block tears apart instead of sliding as one.
+          out.to(el, { xPercent: i % 2 ? 28 : -28, opacity: 0.12, ease: EASE.scrub }, 0);
+        });
+        out
+          .to(".hero-meta", { y: -40, opacity: 0, ease: EASE.scrub }, 0)
+          .to(".hero-bg", { opacity: 0.35, ease: EASE.scrub }, 0);
+        // .hero-stop is deliberately absent from this timeline.
+
+        return () => split.revert();
       });
-    }, root);
 
-    return () => mm.revert();
-  }, []);
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
 
   return (
-    <section ref={root} className="border-b-[3px]">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-        <p data-boot className="label text-ink-soft dark:text-paper-dim">
-          {PROFILE.name} · {PROFILE.place} · {PROFILE.study}
-        </p>
-
-        <h1
-          data-boot
-          className="mt-5 font-display text-[clamp(2.75rem,10vw,7rem)] font-black"
-        >
-          Systems that know
-          <br />
-          when to stop.
-        </h1>
-
-        <p
-          data-boot
-          className="mt-7 max-w-2xl text-lg leading-relaxed text-ink-soft sm:text-xl dark:text-paper-dim"
-        >
-          Six projects below. Each one is introduced by the thing it{" "}
-          <span className="mark font-medium">refuses</span> to do — because
-          that’s the decision that took the thinking. The rest is
-          implementation.
-        </p>
-
-        <div data-boot className="mt-9 flex flex-wrap gap-3">
-          <a
-            href="#work"
-            className="brut brut-press label flex items-center gap-2 bg-coral px-5 py-3 text-ink"
-          >
-            See the work
-            <ArrowDown size={15} aria-hidden />
-          </a>
-          <a
-            href={PROFILE.github}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="brut brut-press label flex items-center gap-2 px-5 py-3"
-          >
-            <GithubMark size={15} />
-            GitHub
-          </a>
+    // #top sits on a wrapper outside the pin: on the pinned section it resolves to the
+    // pin's end (70% of a screen down), where the hero has already faded out.
+    <div id="top">
+      <section
+        ref={root}
+        className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden px-4 pb-10 pt-28 sm:px-6 md:px-10 md:pb-14"
+      >
+        <div className="hero-bg absolute inset-0 -z-10">
+          <ParticleField spacing={24} radius={190} freezeSelector=".hero-stop" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,var(--color-ink)_85%)]" />
         </div>
 
-        {/* A count, not a claim. Both numbers come from the project list. */}
-        <dl
-          data-boot
-          className="brut-sm mt-12 grid max-w-xl grid-cols-3 divide-x-[3px] divide-[var(--line)]"
-        >
-          {[
-            ["Projects", String(PROJECTS.length)],
-            ["Deployed", String(LIVE_COUNT)],
-            ["Graduating", "2027"],
-          ].map(([term, value]) => (
-            <div key={term} className="px-4 py-3">
-              <dt className="label text-ink-soft dark:text-paper-dim">{term}</dt>
-              <dd className="mt-1 font-display text-2xl font-black">{value}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-    </section>
+        <h1 className="font-display text-[clamp(2.6rem,11.5vw,11.5rem)] font-medium leading-[0.9] tracking-[-0.045em]">
+          <span className="sr-only">Systems that know when to stop.</span>
+          <span aria-hidden="true" className="block">
+            <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
+              <span className="hero-drift inline-block">Systems</span>
+            </span>
+            <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
+              <span className="hero-drift text-outline inline-block pl-[8vw]">that know</span>
+            </span>
+            <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
+              <span className="hero-drift inline-block">when to</span>{" "}
+              <span className="hero-stop inline-block cursor-default text-neon">stop.</span>
+            </span>
+          </span>
+        </h1>
+
+        <div className="hero-meta mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-md text-lg leading-snug text-mute md:text-xl">
+            Six projects below. Each one is introduced by the thing it refuses to do, because
+            that’s the decision that took the thinking.
+          </p>
+          <div className="flex flex-wrap items-center gap-8">
+            <MagneticButton href="#work">
+              See what they refuse <span aria-hidden="true">↓</span>
+            </MagneticButton>
+            <p className="label text-mute">
+              {PROJECTS.length} projects · {LIVE_COUNT} deployed · graduating 2027
+              <span className="hidden [@media(hover:hover)_and_(pointer:fine)]:inline"> · hover “stop.”</span>
+            </p>
+          </div>
+        </div>
+        <p className="sr-only">
+          {PROFILE.name}, {PROFILE.place}, {PROFILE.study}.
+        </p>
+      </section>
+    </div>
   );
 }

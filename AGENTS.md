@@ -29,56 +29,66 @@ list.
 
 ## Design system
 
-Neo-brutalism, carried over from StarMatch so the two sites read as one hand:
-3px ink borders, hard offset shadows, no blur and no gradients on UI chrome.
-`.brut` is the single primitive everything is built from.
+Kevin's house style, the Motion Kit look (preview
+https://claude.ai/artifact/Wty5i9xBZMaqMrCmnxAXtF): monochrome ink, one neon accent,
+grain and mesh for depth. Dark only.
 
-Tokens live in `app/globals.css` under `@theme` — there is **no
-`tailwind.config.ts`**, this is native Tailwind v4. Surfaces are paper/ink;
-accents are acid, volt, coral, mint, orchid, used flat and one per project.
+Tokens live in `app/globals.css` under `@theme` (native Tailwind v4, no
+`tailwind.config.ts`): ink `#0a0a0b`, ink-2 `#111113`, ink-3 `#18181b`, line
+`#26262a`, bone `#ededea`, mute `#8b8b92`, neon `#c8ff2e`, neon-2 `#8a6bff`.
 
-Type: Archivo (display, 900) · Space Grotesk (body) · IBM Plex Mono (labels).
+Type: Space Grotesk (display and body) · JetBrains Mono (`.label`, 11px, 0.2em).
 
-### Contrast rules that are already load-bearing
-
-- **Only volt carries white text** (4.93:1). Coral looks like it should and
-  does not — white on coral is 3.05:1 and fails AA; ink on coral is 6.46:1.
-  `ACCENT_FG` in `lib/projects.ts` encodes this; measure before changing it.
-- **`@custom-variant dark (&:is(.dark *));` at the top of `globals.css` is
-  required.** Without it the `dark:` utilities follow the OS setting while the
-  toggle moves `.dark`, and on an OS set to dark the light theme renders
-  paper-on-paper at 1.14:1 — invisible text.
-
-## Theme
-
-Lives in the DOM, not React state. An inline script in `app/layout.tsx` sets
-`data-theme` and `.dark` before first paint; the header button mutates them
-directly and CSS swaps the icon. `suppressHydrationWarning` on `<html>` is
-deliberate — the script makes client markup differ from the server's on purpose.
+The hazard stripe (`.hazard`, neon on ink) is on the refusal band and nowhere else.
 
 ## Motion
 
-Lenis (scroll, on the GSAP ticker) · GSAP ScrollTrigger (scroll-linked reveals).
-Both branches sit inside `gsap.matchMedia`, so reduced-motion users register no
-triggers at all.
+Import GSAP from `@/lib/gsap` (plugins and custom eases registered once) and timing
+from `@/lib/animation-constants` (`EASE`, `DURATION`, `STAGGER`, `SCROLL`, `MQ`).
+Lenis lives in `components/lenis-provider.tsx`, on the GSAP ticker; `useLenis()` returns
+it, or null under reduced motion.
 
-Timelines use `gsap.from()`, never `gsap.to()` from a hidden state: the markup
-is visible by default, so a bundle error leaves a readable page rather than a
-blank one.
+- Every component wraps GSAP in `useGSAP` + `gsap.matchMedia`; reduced motion registers
+  no triggers and renders the final state.
+- Markup is the final state; animate with `from`/`fromTo`. A bundle error leaves a
+  readable page.
+- Transform and opacity only. `ease: "none"` (`EASE.scrub`) only on scrubbed timelines.
+- Never put `will-change: transform` on an ancestor of a pinned element; it breaks
+  pinning.
+- `MQ.walkthrough` in `lib/animation-constants.ts` and the `walk` custom variant in
+  `app/globals.css` describe the same media query. Change both or neither.
+- Deep links: the browser jumps to `/#about` before the walkthrough pin inserts its
+  spacer, so `lenis-provider.tsx` lands on the hash once more after the first
+  `ScrollTrigger.refresh()`. Keep that if you touch the provider.
+- Borrowed from cred.club (see `docs/DECISIONS.md`): `ui/ink-reveal` (about copy),
+  `ui/pointer-lens` (portrait), `ui/contact-chip` (floating copy-email pill, shares
+  `lib/use-copy-email.ts` with the footer) and `.rule-fade` hairlines. Same rules as
+  everything else: transform and opacity only, readable resting state.
 
-`ScrollTrigger` measures before web fonts land. `document.fonts.ready` triggers
-a refresh — scoped inside the component effect, because at module scope it
-fires before the triggers exist and leaves them broken.
+## Refusal scenes
+
+`components/scenes/<project>.tsx` each export an `aria-hidden` SVG drawn in its final
+refused pose and a `play(root)` timeline that starts with `set`/`fromTo` for its
+initial pose. `components/scenes/index.ts` maps `SceneKey` to both; `runScene()` kills a
+running timeline before replaying, so the Try button can be mashed safely. Scene labels
+use only words from that project's blurb or refusal detail.
 
 ## Layout
 
 ```
-app/globals.css     tokens, .brut, .hazard, reduced-motion
-app/layout.tsx      fonts, metadata, theme script, skip link, JSON-LD
-lib/projects.ts     the six projects + the four principles — all page content
-lib/site.ts         canonical URL and profile links
-components/         hero · work · approach · about · site-header · site-footer
-                    smooth-scroll (Lenis+GSAP) · brand-icons (inline SVG)
+app/globals.css           tokens, walk variant, grain/mesh/hazard, reduced motion
+app/layout.tsx            fonts, metadata, grain overlay, LenisProvider, skip link, JSON-LD
+lib/projects.ts           six projects (+ attempt verbs), four principles, STACK
+lib/site.ts               canonical URL and profile links
+lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
+lib/use-copy-email.ts     clipboard hook shared by the footer and the contact chip
+components/ui/            magnetic-button · section-heading · particle-field ·
+                          velocity-marquee · local-time · contact-chip ·
+                          ink-reveal · pointer-lens
+components/scenes/        one refusal scene per project + registry
+components/               hero · work · project-panel · approach · about ·
+                          site-header · site-footer · lenis-provider · brand-icons
+tests/e2e/                Playwright specs
 ```
 
 `lib/projects.ts` is the content layer. Edit copy there, not in the components.
@@ -97,5 +107,6 @@ change is in the response.
 
 ## Verifying
 
-See `docs/VERIFY.md`. `npm run build` is the real gate; there is no test runner.
-Contrast changes must be measured in the browser, in both themes, not eyeballed.
+See `docs/VERIFY.md`. `npm run lint`, `npm run build` and `npm run test:e2e:prod`
+must all pass. The Playwright suite covers contrast, 375px overflow, reduced motion,
+no-JS and keyboard focus inside the pinned walkthrough.
