@@ -63,8 +63,9 @@ export function playMemoryvault(root: HTMLElement) {
       // reads as kept.
       .fromTo(
         q(".mv-fact"),
-        { x: -150, opacity: 0, scale: 0.7 },
-        { x: 0, opacity: 1, scale: 1, transformOrigin: "50% 50%", duration: 0.7, ease: EASE.snapBack, stagger: 0.14 },
+        // Origin on the from side too, or SVG smoothOrigin offsets the chips as they scale.
+        { x: -150, opacity: 0, scale: 0.7, transformOrigin: "50% 50%" },
+        { x: 0, opacity: 1, scale: 1, duration: 0.7, ease: EASE.snapBack, stagger: 0.14 },
         0.4,
       )
   );

@@ -68,10 +68,12 @@ export function playFrontier(root: HTMLElement) {
       .set(q(".fr-verdict"), { opacity: 0, y: 8 })
       // expo.out: levels shoot up and settle, like a reading stabilising. Staggered so
       // the eye checks each floor in turn and reaches grounding last.
+      // The origin goes in the from vars: set only on the "to" side, GSAP's SVG smoothOrigin
+      // kept the fills pinned at the top, so they grew downward until the last frame.
       .fromTo(
         q(".fr-fill"),
-        { scaleY: 0 },
-        { scaleY: 1, transformOrigin: "50% 100%", duration: 0.9, ease: EASE.expo, stagger: 0.18 },
+        { scaleY: 0, transformOrigin: "50% 100%" },
+        { scaleY: 1, duration: 0.9, ease: EASE.expo, stagger: 0.18 },
       )
       .to(q(".fr-verdict"), { opacity: 1, y: 0, duration: 0.4, ease: EASE.out }, "-=0.2")
   );

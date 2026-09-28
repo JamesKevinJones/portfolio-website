@@ -15,6 +15,22 @@ test.describe("desktop 1440×900", () => {
       .toBeLessThan(x0 - 300);
   });
 
+  test("the HUD counter rolls to the panel on screen", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+    // The digit whose top sits at the clip window's top is the one a visitor can read.
+    const shown = () =>
+      page.locator(".wk-digits").evaluate((col) => {
+        const top = col.parentElement!.getBoundingClientRect().top;
+        const hit = [...col.children].find((d) => Math.abs(d.getBoundingClientRect().top - top) < 1);
+        return hit?.textContent ?? "none";
+      });
+    for (const i of [3, 1, 5]) {
+      await page.locator("#work article.wk-panel").nth(i).getByRole("button").first().focus();
+      await expect.poll(shown).toBe(String(i + 1).padStart(2, "0"));
+    }
+  });
+
   test("tabbing into panel six brings it on screen", async ({ page }) => {
     await page.goto("/");
     // Wait for hydration: the header clock only shows digits once React is live.

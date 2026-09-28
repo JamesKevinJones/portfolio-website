@@ -182,7 +182,9 @@ export function Work() {
           <span>Keep scrolling →</span>
           <div className="flex items-center gap-4">
             <span className="flex h-[1.2em] overflow-hidden text-bone" aria-hidden="true">
-              <span className="wk-digits flex flex-col leading-[1.2em] will-change-transform">
+              {/* self-start: stretched to the 1.2em row, the column was one line tall and
+                  yPercent moved it 2px instead of a whole digit. */}
+              <span className="wk-digits flex flex-col self-start leading-[1.2em] will-change-transform">
                 {PROJECTS.map((p, i) => (
                   <span key={p.slug}>{pad(i + 1)}</span>
                 ))}

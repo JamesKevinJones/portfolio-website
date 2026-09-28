@@ -119,3 +119,37 @@ test("a scene waits in its opening pose, then plays forward (no snap back)", asy
   await page.waitForTimeout(300);
   expect(waiting).not.toBe(await pose());
 });
+
+test("Frontier's meters grow up from their base while the scene plays", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  const panel = page.locator("#work article.wk-panel").nth(1);
+  await panel.locator("[data-stage]").scrollIntoViewIfNeeded();
+  await panel.getByRole("button", { name: "Answer anyway" }).evaluate((b: HTMLButtonElement) => b.click());
+  await page.waitForTimeout(250); // mid-fill
+  // Each fill's bottom edge must sit on its meter's bottom edge (the rect before it).
+  const gaps = await panel.locator(".fr-fill").evaluateAll((fills) =>
+    fills.map((f) => Math.abs(f.getBoundingClientRect().bottom - f.previousElementSibling!.getBoundingClientRect().bottom)),
+  );
+  for (const g of gaps) expect(g).toBeLessThan(1.5);
+});
+
+test("MemoryVault's facts land exactly where the markup draws them", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  const stage = page.locator("#work article.wk-panel").nth(5).locator("[data-stage]");
+  await stage.scrollIntoViewIfNeeded();
+  const boxes = () => stage.locator(".mv-fact").evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(); return [r.x, r.y]; }));
+  await page.locator("#work article.wk-panel").nth(5).getByRole("button", { name: "Save the scrollback" }).evaluate((b: HTMLButtonElement) => b.click());
+  await expect(stage).toHaveAttribute("data-state", "refused", { timeout: 6000 });
+  const played = await boxes();
+  // Clear GSAP's inline transforms: what remains is the markup's own final pose.
+  await stage.locator(".mv-fact").evaluateAll((els) => els.forEach((e) => { e.removeAttribute("transform"); (e as HTMLElement).style.transform = ""; }));
+  const markup = await boxes();
+  played.forEach(([x, y], i) => {
+    expect(Math.abs(x - markup[i][0])).toBeLessThan(1);
+    expect(Math.abs(y - markup[i][1])).toBeLessThan(1);
+  });
+});
