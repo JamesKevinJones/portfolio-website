@@ -13,8 +13,13 @@ const NAV = [
 ];
 
 /**
- * Fixed mono header. mix-blend-difference keeps it legible over the neon stage panels
- * and the photos without a background bar. The hairline under it is page progress.
+ * Fixed mono header with no bar, so it sits over whatever scrolls beneath it. The
+ * feathered `.header-scrim` keeps it legible there: over the About portrait, plain bone
+ * text measured 1.1:1 composited. A `mix-blend-difference` on the row used to be here for
+ * that; it never did anything, because a fixed header is its own stacking context and the
+ * blend could only see the header's empty contents. Moved onto the header it does work,
+ * but difference cancels over mid-tones and still bottoms out near 2.2:1, so it is a scrim.
+ * The hairline under the row is page progress.
  */
 export function SiteHeader() {
   const bar = useRef<HTMLDivElement>(null);
@@ -35,7 +40,8 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <div className="label flex items-center justify-between gap-4 px-4 py-4 text-bone mix-blend-difference sm:px-6 md:px-10">
+      <div aria-hidden="true" className="header-scrim pointer-events-none absolute inset-x-0 top-0 h-26" />
+      <div className="label relative flex items-center justify-between gap-4 px-4 py-4 text-bone sm:px-6 md:px-10">
         <a href="#top" className="flex items-center gap-2">
           <span className="inline-block size-2 rounded-full bg-neon" aria-hidden="true" />
           <span className="sm:hidden">KJ</span>

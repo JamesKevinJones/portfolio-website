@@ -109,4 +109,7 @@ change is in the response.
 
 See `docs/VERIFY.md`. `npm run lint`, `npm run build` and `npm run test:e2e:prod`
 must all pass. The Playwright suite covers contrast, 375px overflow, reduced motion,
-no-JS and keyboard focus inside the pinned walkthrough.
+no-JS and keyboard focus inside the pinned walkthrough. It also measures the header's
+composited pixels over the portrait, because the header has no bar and CSS colours alone
+cannot see what is behind it. Do not reintroduce `mix-blend-difference` on the header
+row: inside a fixed element it blends against nothing.

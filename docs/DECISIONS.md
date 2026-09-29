@@ -81,3 +81,21 @@ files.
 The repo had no test runner and VERIFY.md asked for contrast, overflow and
 reduced-motion checks by hand. They are now Playwright specs, run against the
 production build with `npm run test:e2e:prod`.
+
+## The header gets a scrim, not `mix-blend-difference` (2026-09-29)
+
+The header has no bar, so it sits over whatever scrolls beneath it. The spec chose
+`mix-blend-difference` on the row to keep it legible over the portrait and the neon
+panels. That blend never did anything: the header is `position: fixed`, which makes it
+its own stacking context, so the blend could only see the header's own empty contents.
+Removing it left the screenshot byte-identical at 375 and 1440. Composited over the
+About portrait, the labels measured 1.1:1.
+
+Making the blend work by moving it onto the `<header>` was measured and rejected: it
+lifts the worst case only to 2.2 to 2.5:1, because difference cancels over mid-tones
+(skin, grey body copy). A feathered ink scrim (`.header-scrim`) is invisible over the
+ink page and only appears where something bright is behind the row. A bar was rejected
+because the design deliberately has none.
+
+The CSS-colour contrast test in `page.spec.ts` reads the header as bone on ink and
+cannot see this. `tests/e2e/header-legibility.spec.ts` measures composited pixels.

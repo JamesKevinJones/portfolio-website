@@ -1,10 +1,25 @@
 # Project State
 
-**Last updated:** 2026-09-27 by claude-code
+**Last updated:** 2026-09-29 by claude-code
 
 ## Where things stand
 
-Redesign on branch `redesign/motion-kit`, open as a draft PR. The site moved from
+Audit pass on branch `design/audit-polish-2`, cut from `main` at the merged Motion Kit
+redesign (`d490b20`, PR 1). It found one real defect: the fixed header's labels
+measured 1.1:1 composited over the About portrait, because the `mix-blend-difference`
+that was meant to keep them legible had never worked (a fixed header is its own
+stacking context). Fixed with a feathered `.header-scrim`, plus a composited-pixel
+regression test that fails without it (1.1 and 1.17 received) and passes with it. A
+dead `--ease-snap-back` CSS token was removed, and `turbopack.root` is pinned so a stray
+parent lockfile stops being inferred as the workspace root. Lint clean, 59 of 59 e2e.
+
+Everything else in the audit was clean: one `h1`, no heading skips, every landmark, no
+unnamed controls, no sub-24px target without spacing exemption, no overflow at 375.
+The detector's `.mesh` grid finding was left alone on purpose: mesh is in the house
+style. Untouched: the header nav links are 17px tall. That passes WCAG 2.5.8 on the
+spacing exemption, so it is a P3 for anyone who wants 44px.
+
+The redesign itself: the site moved from
 neo-brutalism to Kevin's Motion Kit look (dark, monochrome plus neon, grain). The
 thesis is unchanged, but each project now acts it out: a small SVG scene plays its
 refusal and a Try button asks for the forbidden thing. On screens at least 1024×760
@@ -17,11 +32,12 @@ A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by h
 
 ## In progress
 
-- [ ] Draft PR awaiting Kevin's review of the Vercel preview.
+- [ ] `design/audit-polish-2` is two commits ahead of `main`, not yet merged.
 
 ## The exact next step
 
-Review the Vercel preview on the PR, then merge to deploy.
+Look at the header over the portrait, then merge `design/audit-polish-2` into `main`.
+Merging redeploys Vercel, and the scrim is a visible change, so check it rendered first.
 
 ## Open questions
 
@@ -38,3 +54,15 @@ Review the Vercel preview on the PR, then merge to deploy.
   tracked `components/Hero.tsx` silently. Record case renames with
   `git rm --cached` plus `git add`.
 - Contrast must be measured, not eyeballed. See `docs/VERIFY.md`.
+- `mix-blend-mode` inside a `position: fixed` element blends against nothing: fixed
+  is its own stacking context. Put the blend on the fixed element itself, and even
+  then difference cancels over mid-tones. Verify blend effects by comparing pixels.
+- Scroll positions sampled as a fraction of `scrollHeight` are wrong until every
+  ScrollTrigger pin has refreshed. Scroll to the bottom and back before reading it.
+- The e2e suite is load-sensitive at the default worker count: on a busy machine
+  11 tests timed out at 45s, and all 11 passed on `--last-failed --workers=2`.
+- Measuring in the embedded preview pane reads frozen transitions and never fires
+  `loading="lazy"`; use Playwright for anything that needs real compositing.
+- Next 16 crashes on the 8.3 path (`KEVINC~1`) with a libuv assertion. Use a `.cmd`
+  wrapper that `cd /d`s into the real path.
+- Only one `next dev` per folder: stop a preview server before running `npm run test:e2e`.
