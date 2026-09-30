@@ -105,6 +105,10 @@ the URL, which is printed on the resume and in every repo README.
 Deploying is not pushing — after a push, fetch the live URL and confirm the
 change is in the response.
 
+Before any push, run `/security-review` (`.claude/commands/security-review.md`) on the
+pending diff and surface its findings first. The `security.yml` workflow is only a
+backstop on pull requests; it fires after the push, so it cannot be the gate.
+
 ## Verifying
 
 See `docs/VERIFY.md`. `npm run lint`, `npm run build` and `npm run test:e2e:prod`

@@ -1,10 +1,20 @@
 # Project State
 
-**Last updated:** 2026-09-29 by claude-code
+**Last updated:** 2026-09-30 by claude-code
 
 ## Where things stand
 
-Seven projects, on branch `feature/agentshell-project` (not yet merged): agentshell is
+The security-review gate is added on branch `chore/security-gate`, committed locally and
+not pushed. It is `.claude/commands/security-review.md` (the real gate, run before a
+push) plus `.github/workflows/security.yml` (a CI backstop that only runs on pull
+requests), both scaffolded by `_agent-framework/init-agent-context.ps1`, and a `GEMINI.md`
+pointer. This repo had no `.github/` at all before, so it has never had any CI: the e2e
+suite runs only by hand. The four git commands the slash command runs were checked here
+(`origin/HEAD` resolves to `main`, all exit 0). The workflow needs a `CLAUDE_API_KEY`
+repo secret before it can run, and stays red on pull requests until Kevin sets it.
+
+Seven projects, live on `main` at `8c7e30c` and confirmed on the deployed site (7 panels,
+Try works, desktop and 375px phone checked): agentshell is
 the seventh panel, appended last so no existing panel index shifts. Its refusal is "It
 won't run what the agent proposes", quoted from agentshell's AGENTS.md ("nothing in the
 codebase executes agent output"; `readonly` is a safety boundary). The blurb and refusal
@@ -42,14 +52,20 @@ A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by h
 
 ## In progress
 
-- [ ] `feature/agentshell-project` awaits a look at the new panel, then a merge.
+- [ ] `chore/security-gate` is one commit ahead of `main`, not pushed.
 
 ## The exact next step
 
-Look at the agentshell panel rendered, in the pinned walkthrough and in the phone list,
-then merge `feature/agentshell-project` into `main`. Merging redeploys Vercel. If the
-refusal claim ever needs to grow to include quota failover, that needs a real refusal
-observed first; see agentshell's `docs/VERIFY.md`.
+1. Kevin sets the secret himself, never in chat: `gh secret set CLAUDE_API_KEY --repo
+   JamesKevinJones/portfolio-website`.
+2. Run `/security-review` on the pending diff, then merge `chore/security-gate` and push.
+   The workflow file needs a token with the `workflow` scope, or the push is refused.
+3. Consider pinning `anthropics/claude-code-security-review@main` in the workflow to a
+   commit SHA: a moving ref receives the API key. That is the framework's canonical
+   template, so change it there too or the copies drift.
+
+If the agentshell refusal claim ever needs to grow to include quota failover, that needs
+a real refusal observed first; see agentshell's `docs/VERIFY.md`.
 
 ## Open questions
 
