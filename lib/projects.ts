@@ -1,5 +1,5 @@
 /**
- * The six featured projects.
+ * The featured projects.
  *
  * Every `refuses` line is taken from the project’s own README or AGENTS.md —
  * a documented design decision, not a marketing claim written after the fact.
@@ -14,7 +14,8 @@ export type SceneKey =
   | "job-autopilot"
   | "codeaut0"
   | "job-rag"
-  | "memoryvault-ai";
+  | "memoryvault-ai"
+  | "agentshell";
 
 export type Project = {
   slug: SceneKey;
@@ -146,6 +147,26 @@ export const PROJECTS: Project[] = [
     stack: ["Next.js", "Drizzle ORM", "AWS Bedrock", "Auth.js"],
     live: "https://memoryvault-ai-delta.vercel.app",
     source: "https://github.com/JamesKevinJones/Memoryvault-ai",
+  },
+  {
+    slug: "agentshell",
+    name: "agentshell",
+    domain: "Agent tooling",
+    status: "CLI",
+    blurb:
+      "One prompt, a chain of agent CLIs: Claude Code, Codex, Antigravity, then a local model. Ask with ? and the agent’s proposed command lands in your input buffer, not your shell.",
+    refuses: {
+      headline: "It won’t run what the agent proposes.",
+      detail:
+        "Nothing in the codebase executes agent output. A proposal waits in the input buffer for you to press Enter, and the ?, fix and explain commands run each CLI in its own read-only mode, so the agent can’t skip the review by just doing the task.",
+    },
+    attempt: "Run the proposal",
+    // Measured 2026-09-29: `python -m unittest` ran 113 tests, and AGENTS.md records that
+    // the suite never spawns an agent CLI. The chain and the one dependency are read from
+    // DEFAULT_CHAIN and pyproject.toml, not remembered.
+    facts: ["113 tests, no agent CLI spawned", "5-backend failover chain", "1 dependency"],
+    stack: ["Python 3.11", "prompt_toolkit", "SQLite", "PowerShell"],
+    source: "https://github.com/JamesKevinJones/agentshell",
   },
 ];
 

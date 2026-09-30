@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      {/* The six refusal headlines, verbatim, as a teaser for the walkthrough. */}
+      {/* Every refusal headline, verbatim, as a teaser for the walkthrough. */}
       <div className="my-16 md:my-24">
         <hr className="rule-fade" />
         <VelocityMarquee items={PROJECTS.map((p) => p.refuses.headline)} />

@@ -5,7 +5,7 @@
 ### Most portfolios list what the work does. This one leads with what it won't.
 
 A personal site built around one argument: the interesting decision in a system
-is the constraint, not the feature. Six projects, each introduced by the thing
+is the constraint, not the feature. Seven projects, each introduced by the thing
 it refuses to do.
 
 ### **[→ Open the live site](https://portfolio-website-eight-kappa-iwtiz3w2ef.vercel.app)**
@@ -81,6 +81,7 @@ on the site — which is the only reason the claim is worth anything.
 | [CodeAuto](https://github.com/JamesKevinJones/CodeAut0) | to run a workflow that doesn't check out |
 | [JobMatch RAG](https://github.com/JamesKevinJones/job-rag) | to serve a stale listing |
 | [MemoryVault AI](https://github.com/JamesKevinJones/Memoryvault-ai) | to call the scrollback buffer memory |
+| [agentshell](https://github.com/JamesKevinJones/agentshell) | to run what the agent proposes |
 
 ## Design system
 
@@ -179,7 +180,7 @@ printed on my resume and in every project README.
 ```
 app/globals.css           tokens, walk variant, grain/mesh/hazard, reduced motion
 app/layout.tsx            fonts, metadata, grain overlay, LenisProvider, skip link, JSON-LD
-lib/projects.ts           six projects (+ attempt verbs), four principles, STACK
+lib/projects.ts           seven projects (+ attempt verbs), four principles, STACK
 lib/site.ts               canonical URL and profile links
 lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
 lib/use-copy-email.ts     clipboard hook shared by the footer and the contact chip

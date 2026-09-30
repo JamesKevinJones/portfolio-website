@@ -10,10 +10,10 @@ async function hydrated(page: Page) {
 // Phone viewport: stacked list mode, so every panel is reachable by normal scrolling.
 test.use({ viewport: { width: 390, height: 844 } });
 
-test("six panels, each with its quoted refusal and its own scene", async ({ page }) => {
+test("one panel per project, each with its quoted refusal and its own scene", async ({ page }) => {
   await page.goto("/");
   const panels = page.locator("#work article.wk-panel");
-  await expect(panels).toHaveCount(6);
+  await expect(panels).toHaveCount(PROJECTS.length);
   for (const [i, p] of PROJECTS.entries()) {
     const panel = panels.nth(i);
     await expect(panel.getByRole("heading", { level: 3 })).toHaveText(p.name);
@@ -24,8 +24,8 @@ test("six panels, each with its quoted refusal and its own scene", async ({ page
     await expect(stage.locator("svg[aria-hidden='true']")).toHaveCount(1);
   }
   // The hazard stripe lives on refusal bands only: exactly one per panel, none elsewhere.
-  await expect(page.locator(".hazard")).toHaveCount(6);
-  await expect(page.locator("#work .wk-panel .hazard")).toHaveCount(6);
+  await expect(page.locator(".hazard")).toHaveCount(PROJECTS.length);
+  await expect(page.locator("#work .wk-panel .hazard")).toHaveCount(PROJECTS.length);
 });
 
 test("pressing Try replays the refusal and announces it", async ({ page }) => {
@@ -81,8 +81,8 @@ for (const [w, h] of [[375, 667], [1024, 700]]) {
     await page.goto("/");
     await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
     const rows = page.locator("#work [data-stage-footer]");
-    await expect(rows).toHaveCount(6);
-    for (let i = 0; i < 6; i++) {
+    await expect(rows).toHaveCount(PROJECTS.length);
+    for (let i = 0; i < PROJECTS.length; i++) {
       const row = rows.nth(i);
       const before = (await row.boundingBox())!.height;
       // Ten presses without waiting out the "no" shake each time. "Refused ×10." is the longest.
@@ -152,4 +152,30 @@ test("MemoryVault's facts land exactly where the markup draws them", async ({ pa
     expect(Math.abs(x - markup[i][0])).toBeLessThan(1);
     expect(Math.abs(y - markup[i][1])).toBeLessThan(1);
   });
+});
+
+test("agentshell: the proposal lands in the input buffer and the key is never pressed", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
+  const panel = page.locator("#work article.wk-panel").nth(PROJECTS.findIndex((p) => p.slug === "agentshell"));
+  const stage = panel.locator("[data-stage]");
+  await stage.scrollIntoViewIfNeeded();
+  await panel.getByRole("button", { name: "Run the proposal" }).evaluate((b: HTMLButtonElement) => b.click());
+  await expect(stage).toHaveAttribute("data-state", "refused", { timeout: 6000 });
+  // Final pose is the markup's own: no leftover offset on the proposal, the key back at
+  // rest size, the cursor visible again after its blinks.
+  const settled = await stage.evaluate((s) => {
+    const m = (sel: string) => new DOMMatrix(getComputedStyle(s.querySelector(sel)!).transform);
+    return {
+      dx: m(".as-proposal").e,
+      dy: m(".as-proposal").f,
+      enterScale: m(".as-enter").a,
+      cursor: getComputedStyle(s.querySelector(".as-cursor")!).opacity,
+    };
+  });
+  expect(Math.abs(settled.dx)).toBeLessThan(0.5);
+  expect(Math.abs(settled.dy)).toBeLessThan(0.5);
+  expect(settled.enterScale).toBeCloseTo(1, 2);
+  expect(settled.cursor).toBe("1");
 });

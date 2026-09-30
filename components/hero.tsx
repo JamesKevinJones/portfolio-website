@@ -93,7 +93,7 @@ export function Hero() {
 
         <div className="hero-meta mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <p className="max-w-md text-lg leading-snug text-mute md:text-xl">
-            Six projects below. Each one is introduced by the thing it refuses to do, because
+            Seven projects below. Each one is introduced by the thing it refuses to do, because
             that’s the decision that took the thinking.
           </p>
           <div className="flex flex-wrap items-center gap-8">

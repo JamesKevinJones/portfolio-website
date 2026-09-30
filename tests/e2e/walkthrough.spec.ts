@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { PROJECTS } from "../../lib/projects";
 
 const workPinned = (page: Page) => page.locator("#work .pin-spacer");
 
@@ -31,17 +32,20 @@ test.describe("desktop 1440×900", () => {
     }
   });
 
-  test("tabbing into panel six brings it on screen", async ({ page }) => {
+  test("tabbing into the last panel brings it on screen", async ({ page }) => {
     await page.goto("/");
     // Wait for hydration: the header clock only shows digits once React is live.
     await expect(page.getByTestId("local-time").first()).toHaveText(/\d{2}:\d{2}/);
-    const source = page.locator("#work article.wk-panel").nth(5).getByRole("link", { name: /Source/ });
+    // The last panel is the end of the track, the case most likely to be left off screen.
+    const last = page.locator("#work article.wk-panel").nth(PROJECTS.length - 1);
+    const source = last.getByRole("link", { name: /Source/ });
     await source.focus();
     await expect(source).toBeFocused();
     await expect(source).toBeInViewport({ ratio: 1 });
-    await page.keyboard.press("Shift+Tab");
-    await page.keyboard.press("Shift+Tab");
-    await expect(page.locator("#work article.wk-panel").nth(5).getByRole("button")).toBeInViewport();
+    // Back to its Try button: past the Live link when it has one, straight there when not.
+    for (let i = 0; i < (PROJECTS[PROJECTS.length - 1].live ? 2 : 1); i++) await page.keyboard.press("Shift+Tab");
+    await expect(last.getByRole("button")).toBeFocused();
+    await expect(last.getByRole("button")).toBeInViewport();
   });
 });
 
@@ -63,7 +67,7 @@ test("1280×700: too short to pin, so it falls back to the list", async ({ page 
   await page.setViewportSize({ width: 1280, height: 700 });
   await page.goto("/");
   await expect(workPinned(page)).toHaveCount(0);
-  await expect(page.locator("#work article.wk-panel")).toHaveCount(6);
+  await expect(page.locator("#work article.wk-panel")).toHaveCount(PROJECTS.length);
 });
 
 test("reduced motion: plain list, nothing pinned anywhere", async ({ page }) => {
@@ -80,7 +84,7 @@ test("no JavaScript: every refusal is still on the page", async ({ browser }) =>
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.locator("#work article.wk-panel")).toHaveCount(6);
+  await expect(page.locator("#work article.wk-panel")).toHaveCount(PROJECTS.length);
   await expect(page.getByText("It won’t upload your photo.").first()).toBeVisible();
   await context.close();
 });

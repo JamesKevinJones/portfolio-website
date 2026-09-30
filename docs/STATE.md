@@ -4,14 +4,24 @@
 
 ## Where things stand
 
-Audit pass on branch `design/audit-polish-2`, cut from `main` at the merged Motion Kit
-redesign (`d490b20`, PR 1). It found one real defect: the fixed header's labels
-measured 1.1:1 composited over the About portrait, because the `mix-blend-difference`
-that was meant to keep them legible had never worked (a fixed header is its own
-stacking context). Fixed with a feathered `.header-scrim`, plus a composited-pixel
-regression test that fails without it (1.1 and 1.17 received) and passes with it. A
-dead `--ease-snap-back` CSS token was removed, and `turbopack.root` is pinned so a stray
-parent lockfile stops being inferred as the workspace root. Lint clean, 59 of 59 e2e.
+Seven projects, on branch `feature/agentshell-project` (not yet merged): agentshell is
+the seventh panel, appended last so no existing panel index shifts. Its refusal is "It
+won't run what the agent proposes", quoted from agentshell's AGENTS.md ("nothing in the
+codebase executes agent output"; `readonly` is a safety boundary). The blurb and refusal
+deliberately say nothing about learning quota from a real refusal, because no real
+refusal has ever been observed from the agent CLIs; only the mechanics are proven,
+against fakes. Facts are measured: 113 tests (run 2026-09-29), 5 backends in
+`DEFAULT_CHAIN`, 1 dependency in `pyproject.toml`. The Motion Kit look has no per-project
+accents, so a seventh project needed no palette decision.
+
+Shipped before that, on `main` at `331a135`: an audit pass that found one real defect.
+The fixed header's labels measured 1.1:1 composited over the About portrait, because the
+`mix-blend-difference` meant to keep them legible had never worked (a fixed header is its
+own stacking context). Fixed with a feathered `.header-scrim`, plus a composited-pixel
+regression test that fails without it (1.1 and 1.17 received) and passes with it. A dead
+`--ease-snap-back` CSS token was removed, and `turbopack.root` is pinned so a stray
+parent lockfile stops being inferred as the workspace root. Live and confirmed: the
+deployed HTML carries `header-scrim` and no `mix-blend-difference`.
 
 Everything else in the audit was clean: one `h1`, no heading skips, every landmark, no
 unnamed controls, no sub-24px target without spacing exemption, no overflow at 375.
@@ -32,12 +42,14 @@ A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by h
 
 ## In progress
 
-- [ ] `design/audit-polish-2` is two commits ahead of `main`, not yet merged.
+- [ ] `feature/agentshell-project` awaits a look at the new panel, then a merge.
 
 ## The exact next step
 
-Look at the header over the portrait, then merge `design/audit-polish-2` into `main`.
-Merging redeploys Vercel, and the scrim is a visible change, so check it rendered first.
+Look at the agentshell panel rendered, in the pinned walkthrough and in the phone list,
+then merge `feature/agentshell-project` into `main`. Merging redeploys Vercel. If the
+refusal claim ever needs to grow to include quota failover, that needs a real refusal
+observed first; see agentshell's `docs/VERIFY.md`.
 
 ## Open questions
 

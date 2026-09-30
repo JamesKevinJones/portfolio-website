@@ -78,7 +78,7 @@ use only words from that project's blurb or refusal detail.
 ```
 app/globals.css           tokens, walk variant, grain/mesh/hazard, reduced motion
 app/layout.tsx            fonts, metadata, grain overlay, LenisProvider, skip link, JSON-LD
-lib/projects.ts           six projects (+ attempt verbs), four principles, STACK
+lib/projects.ts           seven projects (+ attempt verbs), four principles, STACK
 lib/site.ts               canonical URL and profile links
 lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
 lib/use-copy-email.ts     clipboard hook shared by the footer and the contact chip

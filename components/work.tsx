@@ -13,7 +13,7 @@ import { poseScene, runScene } from "@/components/scenes";
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
- * Six projects, one screen each.
+ * One screen per project.
  * Walkthrough (MQ.walkthrough + motion): the pin wrapper pins and vertical scroll drives
  * the inner track sideways; each panel's blocks and scene play as it arrives.
  * Stacked (smaller or shorter screens): a vertical list with scroll reveals.
@@ -171,7 +171,7 @@ export function Work() {
         <SectionHeading
           index="01"
           eyebrow="Selected work"
-          title="Six systems, and what each one won’t do."
+          title="Seven systems, and what each one won’t do."
           lede="Every refusal below is a documented decision in that project’s own README or agent context. Press the button on each one and ask it anyway."
         />
       </div>

@@ -99,3 +99,23 @@ because the design deliberately has none.
 
 The CSS-colour contrast test in `page.spec.ts` reads the header as bone on ink and
 cannot see this. `tests/e2e/header-legibility.spec.ts` measures composited pixels.
+
+## agentshell is the seventh project (2026-09-29)
+
+It is the clearest example of the thesis that was not yet on the page: a read-only
+proposal mode that is a safety boundary rather than a hint. Its `AGENTS.md` says nothing
+in the codebase executes agent output, which makes the refusal quotable like the others.
+
+The claim stops at what is proven. agentshell also fails over between agent CLIs when one
+is out of quota, but no real refusal has been observed from any of them, so the refusal
+patterns are still guesses and that behaviour is not on the page. Facts are measured on
+the day: 113 tests, 5 backends in `DEFAULT_CHAIN`, 1 dependency.
+
+Appended as panel seven, not inserted, so the index-based tests for the other six keep
+pointing at the same projects. The old "tabbing into panel six" test really guarded the
+end of the pinned track, so it now targets the last panel and follows its links (this
+one has no Live link, so it is one Shift+Tab back to the Try button, not two). Counts in
+the tests read `PROJECTS.length` instead of a literal.
+
+The five-accent palette concern raised earlier no longer applies: the Motion Kit look
+has one neon accent and none per project.
