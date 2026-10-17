@@ -36,6 +36,11 @@ export type Project = {
   stack: string[];
   live?: string;
   source: string;
+  /**
+   * A screenshot of the live deployment, taken 2026-10-17. The caption says only what is
+   * visible in the picture. MemoryVault has none: signed out it shows a Google sign-in.
+   */
+  shot?: { src: string; alt: string; caption: string };
 };
 
 export const PROJECTS: Project[] = [
@@ -58,6 +63,11 @@ export const PROJECTS: Project[] = [
     stack: ["Next.js 16", "TensorFlow.js", "face-api", "visx"],
     live: "https://starmatch-liard.vercel.app",
     source: "https://github.com/JamesKevinJones/starmatch",
+    shot: {
+      src: "/images/work/starmatch.jpg",
+      alt: "StarMatch's first screen: the headline “Which face is yours?” and counters for 128 dimensions, 2066 public figures and 0 photos uploaded.",
+      caption: "The first screen. Its photos-uploaded counter reads 0.",
+    },
   },
   {
     slug: "frontier-platform",
@@ -76,6 +86,11 @@ export const PROJECTS: Project[] = [
     stack: ["Python 3.12", "React", "TypeScript", "GitHub Actions"],
     live: "https://frontier-platform-lovat.vercel.app",
     source: "https://github.com/JamesKevinJones/frontier-platform",
+    shot: {
+      src: "/images/work/frontier-platform.jpg",
+      alt: "The Frontier Console overview: platform metrics such as citation hit rate and guard recall, and a panel of quality gates enforced in CI.",
+      caption: "The console, with the quality gates CI enforces.",
+    },
   },
   {
     slug: "job-autopilot",
@@ -111,6 +126,11 @@ export const PROJECTS: Project[] = [
     stack: ["React 19", "React Flow", "Zustand", "MSW"],
     live: "https://codeaut0.vercel.app",
     source: "https://github.com/JamesKevinJones/CodeAut0",
+    shot: {
+      src: "/images/work/codeaut0.jpg",
+      alt: "The CodeAuto drafting sheet with Start, Task and End nodes and no links. The checks list says Task and End are not connected, and Run test is disabled.",
+      caption: "Three nodes and no links: two issues outstanding, so Run test stays disabled.",
+    },
   },
   {
     slug: "job-rag",
@@ -129,6 +149,11 @@ export const PROJECTS: Project[] = [
     stack: ["Next.js", "Gemini", "Vercel AI SDK", "Cheerio"],
     live: "https://job-rag-drab.vercel.app",
     source: "https://github.com/JamesKevinJones/job-rag",
+    shot: {
+      src: "/images/work/job-rag.jpg",
+      alt: "JobMatch RAG answering “Remote React roles that mention TypeScript” with a Product Engineer listing card tagged Golang, JavaScript, React and AI.",
+      caption: "A plain-language query, answered with a structured card.",
+    },
   },
   {
     slug: "memoryvault-ai",

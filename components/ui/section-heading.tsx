@@ -44,7 +44,8 @@ export function SectionHeading({ index, eyebrow, title, lede }: SectionHeadingPr
   );
 
   return (
-    <div ref={root} className="grid gap-6 md:grid-cols-[1fr_2fr] md:gap-10">
+    // Side-by-side from xl: below 1280 the heading needs the full width to stay within two lines.
+    <div ref={root} className="grid gap-6 xl:grid-cols-[1fr_2fr] xl:gap-10">
       <p className="sh-fade label flex gap-4 text-mute md:pt-3">
         <span className="text-neon">{index}</span>
         <span>{eyebrow}</span>
@@ -52,11 +53,11 @@ export function SectionHeading({ index, eyebrow, title, lede }: SectionHeadingPr
       <div>
         <h2
           ref={heading}
-          className="split-pad font-display text-[clamp(2.4rem,6vw,5.5rem)] font-medium leading-[0.92] tracking-[-0.04em]"
+          className="split-pad font-display text-[clamp(1.875rem,5.5vw,5rem)] font-medium leading-[0.92] tracking-[-0.04em]"
         >
           {title}
         </h2>
-        {lede && <p className="sh-fade mt-6 max-w-xl text-lg leading-relaxed text-mute">{lede}</p>}
+        {lede && <p className="sh-fade mt-6 max-w-xl text-lg leading-relaxed text-bone/80">{lede}</p>}
       </div>
     </div>
   );

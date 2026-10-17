@@ -37,7 +37,9 @@ Tokens live in `app/globals.css` under `@theme` (native Tailwind v4, no
 `tailwind.config.ts`): ink `#0a0a0b`, ink-2 `#111113`, ink-3 `#18181b`, line
 `#26262a`, bone `#ededea`, mute `#8b8b92`, neon `#c8ff2e`, neon-2 `#8a6bff`.
 
-Type: Space Grotesk (display and body) · JetBrains Mono (`.label`, 11px, 0.2em).
+Type: Space Grotesk (display and body) · JetBrains Mono (`.label`, 13px, 0.15em).
+Nothing meant to be read goes below 13px; running text is `text-bone/80`, `text-mute`
+is for secondary notes only (see `docs/DECISIONS.md`, taste-skill audit).
 
 The hazard stripe (`.hazard`, neon on ink) is on the refusal band and nowhere else.
 
@@ -86,7 +88,7 @@ components/ui/            magnetic-button · section-heading · particle-field �
                           velocity-marquee · local-time · contact-chip ·
                           ink-reveal · pointer-lens
 components/scenes/        one refusal scene per project + registry
-components/               hero · work · project-panel · approach · about ·
+components/               hero · work · project-panel · live-shots · approach · about ·
                           site-header · site-footer · lenis-provider · brand-icons
 tests/e2e/                Playwright specs
 ```

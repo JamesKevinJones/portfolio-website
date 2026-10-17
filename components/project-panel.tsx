@@ -49,7 +49,10 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
       aria-labelledby={`${project.slug}-name`}
       className="wk-panel group/panel relative walk:h-full walk:w-[88vw] walk:shrink-0 walk:px-10 walk:pb-10 walk:pt-20"
     >
-      <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-12 walk:h-full">
+      {/* Walkthrough: the copy column is the wider one. With body copy at 15-16px the
+          narrower column overran a pinned 1024x760 panel by up to 97px, and a pinned panel
+          clips rather than scrolls. Measured fit at 1024x760, 1366x768 and 1536x760. */}
+      <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-12 walk:h-full walk:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-5 walk:gap-4">
           <p className="wk-reveal label flex flex-wrap items-center gap-3 text-mute">
             <span className="text-neon">
@@ -64,7 +67,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
           >
             {project.name}
           </h3>
-          <p className="wk-reveal max-w-xl text-base leading-relaxed text-mute">{project.blurb}</p>
+          <p className="wk-reveal max-w-xl text-base leading-relaxed text-bone/80">{project.blurb}</p>
 
           {/* The refusal band. The only place on the site the hazard stripe appears. */}
           <div className="wk-reveal overflow-hidden rounded-2xl border border-line bg-ink-2">
@@ -76,7 +79,9 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
               <p className="mt-2 font-display text-[clamp(1.35rem,2.2vw,1.9rem)] font-medium leading-tight tracking-[-0.02em]">
                 {project.refuses.headline}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-mute">{project.refuses.detail}</p>
+              <p className="mt-2 text-base leading-relaxed text-bone/80 walk:text-[0.9375rem] walk:leading-[1.55]">
+                {project.refuses.detail}
+              </p>
             </div>
           </div>
 
@@ -91,7 +96,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
                 </li>
               ))}
             </ul>
-            <p className="font-mono text-xs leading-relaxed text-mute">{project.stack.join(" · ")}</p>
+            <p className="font-mono text-sm leading-relaxed text-mute">{project.stack.join(" · ")}</p>
           </div>
         </div>
 
@@ -118,7 +123,9 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
               >
                 {project.attempt}
               </button>
-              <p role="status" className="label min-h-[2.75em] basis-full leading-snug text-neon walk:min-h-[1em] walk:basis-auto">
+              {/* Three lines reserved (3 × 1.375 leading): at 13px the longest "Refused ×10. …"
+                  wraps to three on a 375px phone, and a growing row shifts every trigger below. */}
+              <p role="status" className="label min-h-[4.125em] basis-full leading-snug text-neon walk:min-h-[1em] walk:basis-auto">
                 {status}
               </p>
             </div>

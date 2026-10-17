@@ -119,3 +119,35 @@ the tests read `PROJECTS.length` instead of a literal.
 
 The five-accent palette concern raised earlier no longer applies: the Motion Kit look
 has one neon accent and none per project.
+
+## Taste-skill audit: readability fixes, real screenshots, house style kept (2026-10-17)
+
+The `design-taste-frontend` skill audited the live site: 51 lint and 14 inspector
+failures. About half were the Motion Kit look itself (monospace labels, status pills,
+`01 / 07` numbering, mesh and scrim gradients, hairlines, 1px outlined panels). The skill
+bans those on taste grounds and admits they are more common on award sites than weak ones.
+Kevin chose to keep the house style and fix only what was wrong in any style:
+
+- **Nothing meant to be read is under 13px.** `.label` went from 11px/0.2em to
+  13px/0.15em. Running text (ledes, blurbs, refusal detail, rule bodies, footer) moved
+  from `text-mute` (5.6:1) to `text-bone/80`; mute stays for secondary notes.
+- **The walkthrough copy column is the wider one** (`walk:grid-cols-[1.2fr_1fr]`) and
+  refusal detail is 15px there (16px in the stacked list). At 16px with the old
+  ratio, four pinned panels at 1024×760 overran by 45-97px, and a pinned panel clips
+  rather than scrolls. Frontier already overran by 7px on `main`. Measured fit at
+  1024×760, 1366×768, 1536×760 and 1440×900.
+- **Section headings stay within two lines** from 375 to 1920: side-by-side only from
+  `xl`, size `clamp(1.875rem,5.5vw,5rem)`; the footer heading is capped at `12em`.
+  The hero stays three rows on purpose: the staircase is the signature.
+- **The phone status line reserves three lines** (`min-h-[4.125em]`): at 13px the
+  longest "Refused ×10. …" wraps to three on 375px, and the e2e height test caught it.
+- **Real screenshots** of four live deployments (`components/live-shots.tsx`,
+  `public/images/work/`, captions in `lib/projects.ts` describing only what is visible).
+  The scenes act out each refusal; these show the real interfaces. CodeAuto's shot has
+  three unlinked nodes so its checker shows the refusal live. MemoryVault is left out:
+  signed out it is a Google sign-in page. JobMatch's shot is cropped above its answer
+  text, which renders raw markdown asterisks (a bug in job-rag, not fixed here).
+
+Defended rather than changed: the inspector's "covered text" (probed in a real browser:
+the heading is fully visible; it caught the masked rise-in mid-animation, and the marquee
+clips by design), the 9-screen pin (a different project each screen), and no video.

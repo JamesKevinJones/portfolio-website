@@ -48,11 +48,11 @@ export function SiteFooter() {
       </p>
       <h2
         ref={heading}
-        className="split-pad mt-8 max-w-5xl font-display text-[clamp(2.6rem,8vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.045em]"
+        className="split-pad mt-8 max-w-[12em] font-display text-[clamp(2.1rem,8vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.045em]"
       >
         Open to <span className="text-outline">internships</span> and graduate <span className="text-neon">roles.</span>
       </h2>
-      <p className="mt-8 max-w-lg text-lg leading-relaxed text-mute">
+      <p className="mt-8 max-w-lg text-lg leading-relaxed text-bone/80">
         Third-year, graduating 2027. Chennai or remote. If you want to talk about any of the
         work above, the fastest route is email.
       </p>

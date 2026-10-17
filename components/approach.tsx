@@ -88,7 +88,7 @@ export function Approach() {
                   data-rule-body
                   className="grid gap-4 pb-10 sm:pl-[calc(3.5rem+2rem)] md:grid-cols-[2fr_1fr] md:gap-12"
                 >
-                  <p className="max-w-2xl text-lg leading-relaxed text-mute">{body}</p>
+                  <p className="max-w-2xl text-lg leading-relaxed text-bone/80">{body}</p>
                   <p className="label text-bone/80 md:text-right">{source}</p>
                 </div>
               )}

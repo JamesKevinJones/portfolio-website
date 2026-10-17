@@ -1,9 +1,21 @@
 # Project State
 
-**Last updated:** 2026-09-30 by claude-code
+**Last updated:** 2026-10-17 by claude-code
 
 ## Where things stand
 
+**Newest: branch `design/taste-fixes`, not pushed.** A taste-skill pass that keeps the
+Motion Kit look and fixes what was wrong in any style (full reasoning in
+`docs/DECISIONS.md`, "Taste-skill audit"): labels 11px to 13px, running text from mute
+to `text-bone/80`, a wider copy column in the walkthrough (which also fixes a 7px
+overrun Frontier already had at 1024×760 on `main`), section headings within two lines
+from 375 to 1920, and a new "As they run today." block of four real screenshots of the
+live deployments at the end of Work. Verified 2026-10-17: `npm run lint` clean,
+`npm run test:e2e:prod` 60/60 (that run includes `next build`); the taste inspector went
+from 14 FAIL to 11, all remaining ones being the kept house style, the deliberate
+three-row hero, or a covered-text false positive probed in a real browser.
+
+Earlier:
 The security-review gate is added on branch `chore/security-gate`, committed locally and
 not pushed. It is `.claude/commands/security-review.md` (the real gate, run before a
 push) plus `.github/workflows/security.yml` (a CI backstop that only runs on pull
@@ -52,9 +64,18 @@ A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by h
 
 ## In progress
 
+- [ ] `design/taste-fixes`: committed locally, not pushed. Kevin reviews it first.
 - [ ] `chore/security-gate` is one commit ahead of `main`, not pushed.
 
 ## The exact next step
+
+For `design/taste-fixes`: Kevin looks at it locally (`npm run dev`), then run
+`/security-review` on the diff, merge into `main`, push, and confirm the live HTML has
+`As they run today.` (deploying is not pushing). Retake the screenshots if a live
+project's UI changes; how each shot was staged is in DECISIONS. job-rag renders raw markdown
+asterisks in its answers; that is a job-rag fix, not this repo's.
+
+For the older security-gate branch:
 
 1. Kevin sets the secret himself, never in chat: `gh secret set CLAUDE_API_KEY --repo
    JamesKevinJones/portfolio-website`.

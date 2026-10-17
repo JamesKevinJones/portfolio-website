@@ -8,6 +8,7 @@ import { PROJECTS } from "@/lib/projects";
 import { useLenis } from "@/components/lenis-provider";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ProjectPanel } from "@/components/project-panel";
+import { LiveShots } from "@/components/live-shots";
 import { poseScene, runScene } from "@/components/scenes";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -209,6 +210,8 @@ export function Work() {
           ))}
         </div>
       </div>
+
+      <LiveShots />
     </section>
   );
 }

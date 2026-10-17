@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { Check } from "lucide-react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { DURATION, EASE, MQ } from "@/lib/animation-constants";
 import { useCopyEmail } from "@/lib/use-copy-email";
@@ -115,7 +116,7 @@ export function ContactChip({
         {/* Phones get a compact "@" pill so the chip never reaches a panel's Try button
             (checked at 375×667 in page.spec.ts); the words stay for screen readers. */}
         <span aria-hidden="true" className="sm:hidden">
-          {copied ? "✓" : "@"}
+          {copied ? <Check size={14} className="inline" /> : "@"}
         </span>
         <span aria-live="polite" className="sr-only sm:not-sr-only">
           {copied ? "Copied" : "Copy email"}
