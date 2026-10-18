@@ -70,8 +70,10 @@ A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by h
 ## The exact next step
 
 Taste pass: shipped. Follow-ups, none blocking: retake a screenshot if that project's UI
-changes (how each was staged is in DECISIONS); once job-rag stops rendering raw markdown
-(separate task), retake its shot without the crop. The local branch `design/taste-fixes`
+changes (how each was staged is in DECISIONS); job-rag's plain-text fix is live
+(2026-10-18), so retake its shot without the crop after the Gemini quota resets at 05:30
+IST: one query, a 16:10 frame wide enough to include the answer prose, swap
+`public/images/work/job-rag.jpg`, and drop the crop note in DECISIONS. The local branch `design/taste-fixes`
 is merged and can be deleted.
 
 For the older security-gate branch:
