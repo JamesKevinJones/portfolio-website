@@ -4,7 +4,8 @@
 
 ## Where things stand
 
-**Newest: branch `design/taste-fixes`, not pushed.** A taste-skill pass that keeps the
+**Newest: the taste-skill pass, live on `main` at `73aa410` (2026-10-18), confirmed on the
+deployed site: the new block renders, all four screenshots return 200, no console errors.** A taste-skill pass that keeps the
 Motion Kit look and fixes what was wrong in any style (full reasoning in
 `docs/DECISIONS.md`, "Taste-skill audit"): labels 11px to 13px, running text from mute
 to `text-bone/80`, a wider copy column in the walkthrough (which also fixes a 7px
@@ -64,16 +65,14 @@ A Playwright suite (`tests/e2e/`) now covers what VERIFY.md used to ask for by h
 
 ## In progress
 
-- [ ] `design/taste-fixes`: committed locally, not pushed. Kevin reviews it first.
 - [ ] `chore/security-gate` is one commit ahead of `main`, not pushed.
 
 ## The exact next step
 
-For `design/taste-fixes`: Kevin looks at it locally (`npm run dev`), then run
-`/security-review` on the diff, merge into `main`, push, and confirm the live HTML has
-`As they run today.` (deploying is not pushing). Retake the screenshots if a live
-project's UI changes; how each shot was staged is in DECISIONS. job-rag renders raw markdown
-asterisks in its answers; that is a job-rag fix, not this repo's.
+Taste pass: shipped. Follow-ups, none blocking: retake a screenshot if that project's UI
+changes (how each was staged is in DECISIONS); once job-rag stops rendering raw markdown
+(separate task), retake its shot without the crop. The local branch `design/taste-fixes`
+is merged and can be deleted.
 
 For the older security-gate branch:
 
