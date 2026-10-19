@@ -151,7 +151,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/JamesKevinJones/job-rag",
     shot: {
       src: "/images/work/job-rag.jpg",
-      alt: "JobMatch RAG answering “Remote React roles that mention TypeScript” with a Product Engineer listing card tagged Golang, JavaScript, React and AI.",
+      alt: "JobMatch RAG answering “Remote React roles that mention TypeScript” with a SuperPlane Product Engineer card tagged Golang, JavaScript, React and AI, followed by the answer “I found one remote React role in the current listings, though it does not explicitly specify TypeScript. Check out the job card for details.”",
       caption: "A plain-language query, answered with a structured card.",
     },
   },

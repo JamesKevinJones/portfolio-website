@@ -145,8 +145,8 @@ Kevin chose to keep the house style and fix only what was wrong in any style:
   `public/images/work/`, captions in `lib/projects.ts` describing only what is visible).
   The scenes act out each refusal; these show the real interfaces. CodeAuto's shot has
   three unlinked nodes so its checker shows the refusal live. MemoryVault is left out:
-  signed out it is a Google sign-in page. JobMatch's shot is cropped above its answer
-  text, which renders raw markdown asterisks (a bug in job-rag, not fixed here).
+  signed out it is a Google sign-in page. JobMatch's shot was retaken uncropped on
+  2026-10-19, after job-rag's plain-text fix, so it now shows the answer prose too.
 
 Defended rather than changed: the inspector's "covered text" (probed in a real browser:
 the heading is fully visible; it caught the masked rise-in mid-animation, and the marquee
