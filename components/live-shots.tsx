@@ -43,7 +43,7 @@ export function LiveShots() {
         As they run today.
       </h3>
       <p className="mt-5 max-w-xl text-lg leading-relaxed text-bone/80">
-        Screenshots of the live deployments, taken 17 October 2026. MemoryVault AI sits behind a
+        Screenshots of the live deployments, taken 17–19 October 2026. MemoryVault AI sits behind a
         Google sign-in, so it isn’t shown.
       </p>
 

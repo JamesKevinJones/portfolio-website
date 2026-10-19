@@ -37,7 +37,7 @@ export type Project = {
   live?: string;
   source: string;
   /**
-   * A screenshot of the live deployment, taken 2026-10-17. The caption says only what is
+   * A screenshot of the live deployment, taken 2026-10-17 (JobMatch retaken 2026-10-19). The caption says only what is
    * visible in the picture. MemoryVault has none: signed out it shows a Google sign-in.
    */
   shot?: { src: string; alt: string; caption: string };
