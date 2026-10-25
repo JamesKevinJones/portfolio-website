@@ -13,6 +13,7 @@ it refuses to do.
 `portfolio-website-eight-kappa-iwtiz3w2ef.vercel.app` · deployed on Vercel from `main`
 
 [![Live on Vercel](https://img.shields.io/badge/live-vercel-c8ff2e?labelColor=0a0a0b&logo=vercel&logoColor=ededea)](https://portfolio-website-eight-kappa-iwtiz3w2ef.vercel.app)
+[![ci](https://github.com/JamesKevinJones/portfolio-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JamesKevinJones/portfolio-website/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/next.js-16-1B2632?labelColor=0B1016)
 ![TypeScript](https://img.shields.io/badge/typescript-5-1B2632?labelColor=0B1016)
 ![Tailwind](https://img.shields.io/badge/tailwind-v4-1B2632?labelColor=0B1016)
@@ -165,6 +166,11 @@ npm run test:e2e:prod   # against a production build
 ```
 
 On Windows PowerShell use `npm.cmd` in place of `npm`, one command per line.
+
+The suite is 60 Playwright tests across 12 specs: contrast, 375px overflow, reduced
+motion, no JavaScript, keyboard focus in the pinned walkthrough, and the Try buttons.
+[CI](.github/workflows/ci.yml) runs lint and the whole suite against a production
+build on every push and pull request.
 
 ## Deploying
 
