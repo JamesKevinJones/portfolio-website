@@ -4,13 +4,17 @@
 
 ## Where things stand
 
-**Newest, committed on branch `fix/review-feedback`, not pushed: a pass on a reviewer's feedback** ("same transition
+**Newest: a pass on a reviewer's feedback, live on `main` at `d6bfc0d` (2026-10-30), confirmed on
+the deployed site: no outline text, ticker, HUD or chip in the served HTML, one clock and one
+Copy email button (both in the footer), no console errors.** ("same transition
 everywhere", "too many elements", "hard to read"; reasoning in `docs/DECISIONS.md`,
 2026-10-30). Copy no longer animates anywhere. The ticker, walkthrough HUD, header clock,
 floating email chip and the About ink reveal are removed. The hero and footer outline words
 are solid, and project facts are sentence case. The desktop walkthrough now snaps to a
-whole panel. Next step: run `/security-review` on the branch's diff against `main`, then
-merge to `main` and push (that deploys), then confirm the change on the live URL.
+whole panel. `/security-review` on the diff found nothing. 53 Playwright tests (was 60: the
+chip, HUD and ink-reveal tests went with their features, one snapping test was added).
+Heads-up: the unmerged `origin/polish/proof` branch (CI workflow) says "all 60 Playwright
+tests" in its README; fix that to 53 if it is merged.
 
 **Newest: the taste-skill pass, live on `main` at `73aa410` (2026-10-18), confirmed on the
 deployed site: the new block renders, all four screenshots return 200, no console errors.** A taste-skill pass that keeps the
