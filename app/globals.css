@@ -124,17 +124,6 @@
     background-size: 48px 48px;
   }
 
-  .text-outline {
-    -webkit-text-stroke: 1px var(--color-bone);
-    color: transparent;
-  }
-
-  /* SplitText masks clip at the line box; give descenders room without shifting layout. */
-  .split-pad > * {
-    padding-bottom: 0.14em;
-    margin-bottom: -0.14em;
-  }
-
   /*
     The refusal band's warning tape, recoloured neon on ink. Used on the refusal band
     and nowhere else: the moment it becomes texture it stops reading as a warning.

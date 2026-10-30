@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("header is fixed, links only to sections that exist, and shows Chennai time", async ({ page }) => {
+test("header is fixed and links only to sections that exist", async ({ page }) => {
   await page.goto("/");
   const header = page.locator("header").first();
   await expect(header).toHaveCSS("position", "fixed");
@@ -13,8 +13,6 @@ test("header is fixed, links only to sections that exist, and shows Chennai time
   for (const href of hrefs) {
     await expect(page.locator(href!)).toHaveCount(1);
   }
-
-  await expect(header.getByTestId("local-time")).toHaveText(/^\d{2}:\d{2} IST$/);
 });
 
 test("scroll progress hairline scales with the page", async ({ page }) => {

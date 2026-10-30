@@ -1,8 +1,16 @@
 # Project State
 
-**Last updated:** 2026-10-19 by claude-code
+**Last updated:** 2026-10-30 by claude-code
 
 ## Where things stand
+
+**Newest, committed on branch `fix/review-feedback`, not pushed: a pass on a reviewer's feedback** ("same transition
+everywhere", "too many elements", "hard to read"; reasoning in `docs/DECISIONS.md`,
+2026-10-30). Copy no longer animates anywhere. The ticker, walkthrough HUD, header clock,
+floating email chip and the About ink reveal are removed. The hero and footer outline words
+are solid, and project facts are sentence case. The desktop walkthrough now snaps to a
+whole panel. Next step: run `/security-review` on the branch's diff against `main`, then
+merge to `main` and push (that deploys), then confirm the change on the live URL.
 
 **Newest: the taste-skill pass, live on `main` at `73aa410` (2026-10-18), confirmed on the
 deployed site: the new block renders, all four screenshots return 200, no console errors.** A taste-skill pass that keeps the

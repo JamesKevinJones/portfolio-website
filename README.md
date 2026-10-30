@@ -56,14 +56,12 @@ on the site — which is the only reason the claim is worth anything.
   acts out the refusal and the status line answers with the quoted rule. Press it
   again and it counts.
 - **Scroll sideways through the work.** On screens at least 1024×760 the projects pin
-  and slide past one per screen, with a counter and progress rail. Everywhere else,
-  and with reduced motion, they are a plain list.
+  and slide past one per screen, settling on a whole project whenever you stop. Everywhere
+  else, and with reduced motion, they are a plain list.
 - **Open the rules.** Four rules that cost something to learn, one open at a time,
   each with the docs file it came from.
 - **Look through the lens.** On a mouse, a lens over the About portrait shows a second
   photo under the cursor; tap or press it to swap the whole picture.
-- **Copy the email from anywhere.** A small chip follows you from the work to the
-  contact section and copies the address in one press.
 
 <div align="center">
 
@@ -183,10 +181,9 @@ app/layout.tsx            fonts, metadata, grain overlay, LenisProvider, skip li
 lib/projects.ts           seven projects (+ attempt verbs), four principles, STACK
 lib/site.ts               canonical URL and profile links
 lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
-lib/use-copy-email.ts     clipboard hook shared by the footer and the contact chip
+lib/use-copy-email.ts     clipboard hook for the footer's Copy email button
 components/ui/            magnetic-button · section-heading · particle-field ·
-                          velocity-marquee · local-time · contact-chip ·
-                          ink-reveal · pointer-lens
+                          local-time · pointer-lens
 components/scenes/        one refusal scene per project + registry
 components/               hero · work · project-panel · approach · about ·
                           site-header · site-footer · lenis-provider · brand-icons

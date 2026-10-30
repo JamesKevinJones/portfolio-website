@@ -62,24 +62,6 @@ export const DURATION = {
   follow: 0.45,
 } as const;
 
-/** Stagger intervals in seconds. */
-export const STAGGER = {
-  /** Per character: fast enough that a 12-char word lands in ~0.3s. */
-  chars: 0.025,
-  words: 0.06,
-  lines: 0.1,
-  /** Cards and grid items. */
-  items: 0.08,
-} as const;
-
-/** Shared distances for reveals, in yPercent or px as named. */
-export const DISTANCE = {
-  /** Masked line/char reveals start fully below their mask. */
-  maskYPercent: 110,
-  /** Unmasked fade-ups travel a short distance so they read as settle, not slide. */
-  fadeUpPx: 40,
-} as const;
-
 /**
  * ScrollTrigger presets. start/end read as "<element edge> <viewport edge>".
  */

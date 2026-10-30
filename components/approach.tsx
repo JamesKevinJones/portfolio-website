@@ -28,7 +28,7 @@ export function Approach() {
       snapshot.current = null;
       if (!state) return;
       // Opening or closing a story changes the page height, so every trigger below this
-      // list (About, the footer headline, the contact chip) must be re-measured.
+      // list (the About photo curtains) must be re-measured.
       if (window.matchMedia(MQ.reduce).matches) {
         ScrollTrigger.refresh();
         return;

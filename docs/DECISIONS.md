@@ -151,3 +151,46 @@ Kevin chose to keep the house style and fix only what was wrong in any style:
 Defended rather than changed: the inspector's "covered text" (probed in a real browser:
 the heading is fully visible; it caught the masked rise-in mid-animation, and the marquee
 clips by design), the 9-screen pin (a different project each screen), and no video.
+
+## One job per animation, each thing said once (2026-10-30)
+
+A reviewer, Goutham, looked at the live site and said three things: "same transition
+everywhere", "too many elements", "hard to read". All three were true, and they had
+one cause in the code.
+
+- **Same transition.** Five places used one move: the block rises 20-40px and fades
+  in with `power3.out` as it scrolls into view. They were the section headings, the
+  panel copy, the screenshots, the About stack rows and the footer headline. When
+  everything arrives the same way, the motion stops saying anything, so all five are
+  gone. Everything left does a job nothing else does. The hero intro plays once, on
+  load, and its pin tears the headline away. The walkthrough slides sideways to show
+  where you are. The refusal scenes act out the thesis. The About photos open on a
+  curtain. The Rules accordion uses Flip to keep its rows continuous, and the buttons
+  answer the pointer.
+- **Too many elements.** The page said several things twice. The ticker repeated all
+  seven refusal headlines one screen before the panels. The walkthrough HUD repeated
+  each panel's `01 / 07` and the header's progress line. The header clock repeated the
+  footer's. The floating email chip repeated the footer's Copy email button and needed
+  its own logic to dodge the Try buttons. All four were removed, and
+  `ui/velocity-marquee`, `ui/contact-chip` and their tests went with them.
+- **Hard to read.** Text was not at rest while being read. About paragraphs sat at
+  half opacity until scrolled past (`ui/ink-reveal`, removed). Headings were
+  half-masked while scrubbing in, and panel copy faded in while sliding sideways. Two
+  words were 1px outlines with no fill: "that know" is now solid mute and
+  "internships" solid bone. Each project's facts were uppercase tracked mono; they are
+  now sentence case, 14px mono, `text-bone/80`.
+
+This reverses part of the cred.club borrowing (2026-09-27): the ink reveal and the
+contact chip. The pointer lens and the edge-fade rules stay.
+
+**The walkthrough snaps to a whole panel.** Before, it could stop anywhere, with half of
+two projects on screen. It now settles on the nearest panel, leaning 0.3 of a panel the
+way you scrolled, so a fifth of a panel moves you on and a short wheel flick never
+springs back. A scroll that began outside the pin gets no lean, or overshooting its
+start would skip panel one. Where a scroll began is recorded on ScrollTrigger's
+`scrollStart` with the edges counted as inside. `onEnter` and `isActive` were tried
+first and failed: panel one at rest sits exactly on the pin's start, which ScrollTrigger
+counts as outside, so every flick from panel one looked like a fresh arrival and sprang
+back. Measured at 1440x900 with 175px wheel ticks: a 225px overshoot lands on panel one,
+two ticks go to the next panel, one tick springs back, and the pin still lets you out at
+both ends.

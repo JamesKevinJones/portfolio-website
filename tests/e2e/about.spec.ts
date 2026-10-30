@@ -43,18 +43,6 @@ test("fine pointer: a lens opens over the portrait and closes when you leave", a
   await expect(page.getByTestId("portrait-mural")).toHaveCSS("opacity", "0");
 });
 
-test("about copy is bone and brightens word by word as it scrolls", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
-  const first = page.locator("#about .ab-copy p").first();
-  await expect(first).toHaveCSS("color", "rgb(237, 237, 234)");
-  await first.scrollIntoViewIfNeeded();
-  const words = first.locator("div");
-  await expect.poll(() => words.count()).toBeGreaterThan(10);
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await expect.poll(() => words.last().evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
-});
-
 test("the portrait's accessible name starts with its visible label (voice control)", async ({ page }) => {
   await page.goto("/");
   const swap = page.getByRole("button", { name: /swap photo/i });

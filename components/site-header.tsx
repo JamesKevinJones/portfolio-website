@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { EASE, MQ } from "@/lib/animation-constants";
-import { LocalTime } from "@/components/ui/local-time";
 
 const NAV = [
   { href: "#work", label: "Work" },
@@ -47,9 +46,7 @@ export function SiteHeader() {
           <span className="sm:hidden">KJ</span>
           <span className="hidden sm:inline">Kevin Jones</span>
         </a>
-        <span className="hidden md:inline">
-          Chennai · <LocalTime />
-        </span>
+        {/* No clock here: Chennai time is in the footer, said once. */}
         <nav aria-label="Sections" className="flex gap-4 sm:gap-8">
           {NAV.map((item) => (
             <a key={item.href} href={item.href} className="opacity-70 transition-opacity hover:opacity-100">

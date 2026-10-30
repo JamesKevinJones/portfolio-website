@@ -82,7 +82,9 @@ export function Hero() {
               <span className="hero-drift inline-block">Systems</span>
             </span>
             <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
-              <span className="hero-drift text-outline inline-block pl-[8vw]">that know</span>
+              {/* Solid mute, not an outline: a 1px stroke over the particle field was hard
+                  to read. Still a second tone, so the three rows keep their rhythm. */}
+              <span className="hero-drift inline-block pl-[8vw] text-mute">that know</span>
             </span>
             <span className="hero-row block overflow-hidden whitespace-nowrap pb-[0.06em]">
               <span className="hero-drift inline-block">when to</span>{" "}

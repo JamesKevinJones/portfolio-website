@@ -47,21 +47,22 @@ test("rule heads keep their size while the list re-flows", async ({ page }) => {
   during.forEach((h, i) => expect(Math.abs(h - before[i])).toBeLessThan(1));
 });
 
-for (const reduce of [false, true]) {
-test(`toggling a rule re-measures every trigger below it${reduce ? " (reduced motion)" : ""}`, async ({ page }) => {
-  if (reduce) await page.emulateMedia({ reducedMotion: "reduce" });
+// Motion only: with reduced motion nothing below the list has a trigger to go stale.
+test("toggling a rule re-measures every trigger below it", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
   await page.locator("#approach").scrollIntoViewIfNeeded();
   await page.locator("#approach [data-rule-head]").nth(0).click(); // close R/01: the page shrinks
   await page.waitForTimeout(900); // Flip runs 0.6s
-  // The contact chip hides once #contact's top reaches 85% of the screen. Park it at 70%:
-  // with stale triggers (measured before the page shrank) the chip would still be showing.
-  await page.evaluate(() => {
-    const top = document.querySelector("#contact")!.getBoundingClientRect().top + scrollY;
-    window.scrollTo(0, top - innerHeight * 0.7);
+  // The About curtain is fully open once its frame's top passes 40% of the screen. Park
+  // it at 35%: with stale triggers (measured before the page shrank by the closed story)
+  // the frame would still read as lower down and the curtain would be part-way open.
+  const frame = page.locator("#about .ab-frame").first();
+  await frame.evaluate((el) => {
+    window.scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight * 0.35);
   });
-  await page.waitForTimeout(500);
-  await expect(page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i })).toBeHidden();
+  const curtain = frame.locator(".ab-curtain");
+  await expect
+    .poll(async () => curtain.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f))
+    .toBeLessThan(1);
 });
-}

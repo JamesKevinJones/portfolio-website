@@ -16,25 +16,23 @@ test.describe("desktop 1440×900", () => {
       .toBeLessThan(x0 - 300);
   });
 
-  test("the HUD counter rolls to the panel on screen", async ({ page }) => {
+  test("stopping between panels settles on one, leaning the way you scrolled", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
-    // The digit whose top sits at the clip window's top is the one a visitor can read.
-    const shown = () =>
-      page.locator(".wk-digits").evaluate((col) => {
-        const top = col.parentElement!.getBoundingClientRect().top;
-        const hit = [...col.children].find((d) => Math.abs(d.getBoundingClientRect().top - top) < 1);
-        return hit?.textContent ?? "none";
-      });
-    for (const i of [3, 1, 5]) {
-      await page.locator("#work article.wk-panel").nth(i).getByRole("button").first().focus();
-      await expect.poll(shown).toBe(String(i + 1).padStart(2, "0"));
-    }
+    const panels = page.locator("#work article.wk-panel");
+    // Focus jumps panel three to rest on screen; give the arrival snap time to run.
+    await panels.nth(2).getByRole("button").first().focus();
+    await page.waitForTimeout(1000);
+    // 400px is under a third of a 1267px panel: without the lean it would spring back.
+    await page.mouse.wheel(0, 400);
+    await expect
+      .poll(async () => panels.nth(3).evaluate((el) => Math.abs(el.getBoundingClientRect().left)), { timeout: 8000 })
+      .toBeLessThan(2);
   });
 
   test("tabbing into the last panel brings it on screen", async ({ page }) => {
     await page.goto("/");
-    // Wait for hydration: the header clock only shows digits once React is live.
+    // Wait for hydration: the footer clock only shows digits once React is live.
     await expect(page.getByTestId("local-time").first()).toHaveText(/\d{2}:\d{2}/);
     // The last panel is the end of the track, the case most likely to be left off screen.
     const last = page.locator("#work article.wk-panel").nth(PROJECTS.length - 1);

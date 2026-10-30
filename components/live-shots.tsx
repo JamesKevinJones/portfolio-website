@@ -1,44 +1,17 @@
-"use client";
-
-import { useRef } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { gsap, useGSAP } from "@/lib/gsap";
-import { DURATION, EASE, MQ, STAGGER } from "@/lib/animation-constants";
 import { PROJECTS } from "@/lib/projects";
 
 const SHOTS = PROJECTS.filter((p) => p.shot && p.live);
 
 /**
  * The deployed projects as they actually run: the scenes above act out each refusal, these
- * are the real interfaces. Each picture links to its live site.
+ * are the real interfaces. Each picture links to its live site. No scroll reveal: the only
+ * motion here is the hover zoom, which answers the pointer.
  */
 export function LiveShots() {
-  const root = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add(MQ.motion, () => {
-        gsap.utils.toArray<HTMLElement>(".ls-item").forEach((item) => {
-          // Picture first, then its caption: two parts of one figure, not one fade.
-          gsap.from(item.children, {
-            y: 28,
-            opacity: 0,
-            duration: DURATION.base,
-            ease: EASE.out,
-            stagger: STAGGER.items,
-            scrollTrigger: { trigger: item, start: "top 85%", toggleActions: "play none none none" },
-          });
-        });
-      });
-      return () => mm.revert();
-    },
-    { scope: root },
-  );
-
   return (
-    <div ref={root} className="px-4 pb-8 pt-24 sm:px-6 md:px-10 md:pt-32">
+    <div className="px-4 pb-8 pt-24 sm:px-6 md:px-10 md:pt-32">
       <h3 className="font-display text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[0.95] tracking-[-0.035em]">
         As they run today.
       </h3>
@@ -49,7 +22,7 @@ export function LiveShots() {
 
       <ul className="mt-14 grid gap-x-8 gap-y-16 md:grid-cols-2">
         {SHOTS.map(({ slug, name, live, shot }) => (
-          <li key={slug} className="ls-item">
+          <li key={slug}>
             <a
               href={live}
               target="_blank"

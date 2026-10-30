@@ -54,7 +54,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
           clips rather than scrolls. Measured fit at 1024x760, 1366x768 and 1536x760. */}
       <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-12 walk:h-full walk:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-5 walk:gap-4">
-          <p className="wk-reveal label flex flex-wrap items-center gap-3 text-mute">
+          <p className="label flex flex-wrap items-center gap-3 text-mute">
             <span className="text-neon">
               {pad(index + 1)} / {pad(total)}
             </span>
@@ -63,14 +63,14 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
           </p>
           <h3
             id={`${project.slug}-name`}
-            className="wk-reveal font-display text-[clamp(2.4rem,5vw,4.8rem)] font-medium walk:text-[clamp(2.4rem,4vw,4.8rem)] leading-[0.92] tracking-[-0.04em]"
+            className="font-display text-[clamp(2.4rem,5vw,4.8rem)] font-medium walk:text-[clamp(2.4rem,4vw,4.8rem)] leading-[0.92] tracking-[-0.04em]"
           >
             {project.name}
           </h3>
-          <p className="wk-reveal max-w-xl text-base leading-relaxed text-bone/80">{project.blurb}</p>
+          <p className="max-w-xl text-base leading-relaxed text-bone/80">{project.blurb}</p>
 
           {/* The refusal band. The only place on the site the hazard stripe appears. */}
-          <div className="wk-reveal overflow-hidden rounded-2xl border border-line bg-ink-2">
+          <div className="overflow-hidden rounded-2xl border border-line bg-ink-2">
             <div className="hazard hazard-live h-2" aria-hidden="true" />
             <div className="p-5 walk:p-4">
               <p className="label flex items-center gap-2 text-neon">
@@ -85,10 +85,11 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
             </div>
           </div>
 
-          <div className="wk-reveal flex flex-wrap gap-x-8 gap-y-3">
+          <div className="flex flex-wrap gap-x-8 gap-y-3">
             <ul className="space-y-1">
               {project.facts.map((fact) => (
-                <li key={fact} className="label flex gap-2">
+                // Sentence case, not .label caps: these are read, not scanned like a tag.
+                <li key={fact} className="flex gap-2 font-mono text-sm text-bone/80">
                   <span aria-hidden="true" className="text-neon">
                     —
                   </span>
@@ -101,7 +102,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
         </div>
 
         <div className="flex flex-col gap-4 lg:justify-center">
-          <div className="wk-reveal mesh overflow-hidden rounded-3xl border border-line bg-ink-2">
+          <div className="mesh overflow-hidden rounded-3xl border border-line bg-ink-2">
             <div
               ref={stage}
               data-stage
@@ -130,7 +131,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
               </p>
             </div>
           </div>
-          <div className="wk-reveal flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3">
             {project.live && (
               <a
                 href={project.live}

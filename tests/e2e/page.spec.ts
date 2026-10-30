@@ -1,5 +1,4 @@
 import { test, expect, type Page } from "@playwright/test";
-import { PROJECTS } from "../../lib/projects";
 
 async function lowContrast(page: Page) {
   return page.evaluate(() => {
@@ -59,31 +58,6 @@ test("reduced motion: whole page, nothing pinned, no Lenis, all sections present
     await expect(page.locator(`#${id}`)).toBeVisible();
   }
 });
-
-for (const [w, h] of [[375, 667], [768, 1024], [1280, 700]]) {
-  test(`${w}×${h}: the contact chip never covers a Try button or its refusal line`, async ({ page }) => {
-    await page.setViewportSize({ width: w, height: h });
-    await page.goto("/");
-    await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
-    const chip = page.locator(".fixed").getByRole("button", { name: /copy email address|email copied/i });
-    const rows = page.locator("#work [data-stage-footer]");
-    await expect(rows).toHaveCount(PROJECTS.length);
-    for (let i = 0; i < PROJECTS.length; i++) {
-      await rows.nth(i).getByRole("button", { name: PROJECTS[i].attempt }).click(); // status line now has text
-      // Walk the row up through the bottom of the screen, where a bottom-right chip sits.
-      for (const lift of [-20, 10, 40, 70, 100]) {
-        await rows.nth(i).evaluate((el, d) => {
-          window.scrollTo(0, el.getBoundingClientRect().bottom + scrollY - innerHeight + d);
-        }, lift);
-        await page.waitForTimeout(350);
-        if (!(await chip.isVisible())) continue;
-        const [a, b] = [(await rows.nth(i).boundingBox())!, (await chip.boundingBox())!];
-        const overlap = a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
-        expect(overlap, `chip covers ${PROJECTS[i].name}'s Try row (lift ${lift})`).toBe(false);
-      }
-    }
-  });
-}
 
 for (const width of [375, 768, 1024, 1440]) {
   test(`${width}px: the page never scrolls sideways, top to bottom`, async ({ page }) => {

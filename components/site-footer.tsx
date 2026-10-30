@@ -1,56 +1,26 @@
 "use client";
 
-import { useRef } from "react";
 import { GithubMark, LinkedinMark } from "@/components/brand-icons";
 import { PROFILE } from "@/lib/site";
-import { gsap, SplitText, useGSAP } from "@/lib/gsap";
-import { DURATION, EASE, MQ, STAGGER } from "@/lib/animation-constants";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { LocalTime } from "@/components/ui/local-time";
 import { useCopyEmail } from "@/lib/use-copy-email";
 
+/**
+ * The headline is static: it used to rise out of masks like the hero and every section
+ * heading. The only motion left here answers the pointer (magnetic buttons, copy label).
+ */
 export function SiteFooter() {
-  const root = useRef<HTMLElement>(null);
-  const heading = useRef<HTMLHeadingElement>(null);
-  // Same hook as the floating contact chip, so both copy and relabel identically.
   const { copied, copy } = useCopyEmail();
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add(MQ.motion, () => {
-        SplitText.create(heading.current, {
-          type: "lines",
-          mask: "lines",
-          autoSplit: true,
-          // power4.out: heavier landing than section headings, this is the last word.
-          // Plays when the footer's top crosses 75% and reverses if you scroll back up.
-          onSplit: (self) =>
-            gsap.from(self.lines, {
-              yPercent: 105,
-              duration: DURATION.slow,
-              ease: EASE.outStrong,
-              stagger: STAGGER.lines,
-              scrollTrigger: { trigger: root.current, start: "top 75%", toggleActions: "play none none reverse" },
-            }),
-        });
-      });
-      return () => mm.revert();
-    },
-    { scope: root },
-  );
-
   return (
-    <footer ref={root} id="contact" className="relative overflow-hidden border-t border-line px-4 pb-10 pt-24 sm:px-6 md:px-10 md:pt-36">
+    <footer id="contact" className="relative overflow-hidden border-t border-line px-4 pb-10 pt-24 sm:px-6 md:px-10 md:pt-36">
       <p className="label flex gap-4 text-mute">
         <span className="text-neon">04</span>
         <span>Contact</span>
       </p>
-      <h2
-        ref={heading}
-        className="split-pad mt-8 max-w-[12em] font-display text-[clamp(2.1rem,8vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.045em]"
-      >
-        Open to <span className="text-outline">internships</span> and graduate <span className="text-neon">roles.</span>
+      <h2 className="mt-8 max-w-[12em] font-display text-[clamp(2.1rem,8vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.045em]">
+        Open to internships and graduate <span className="text-neon">roles.</span>
       </h2>
       <p className="mt-8 max-w-lg text-lg leading-relaxed text-bone/80">
         Third-year, graduating 2027. Chennai or remote. If you want to talk about any of the

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type Lenis from "lenis";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { DURATION, EASE, MQ, SCROLL, STAGGER } from "@/lib/animation-constants";
+import { EASE, MQ, SCROLL } from "@/lib/animation-constants";
 import { PROJECTS } from "@/lib/projects";
 import { useLenis } from "@/components/lenis-provider";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -11,14 +11,15 @@ import { ProjectPanel } from "@/components/project-panel";
 import { LiveShots } from "@/components/live-shots";
 import { poseScene, runScene } from "@/components/scenes";
 
-const pad = (n: number) => String(n).padStart(2, "0");
-
 /**
  * One screen per project.
  * Walkthrough (MQ.walkthrough + motion): the pin wrapper pins and vertical scroll drives
- * the inner track sideways; each panel's blocks and scene play as it arrives.
- * Stacked (smaller or shorter screens): a vertical list with scroll reveals.
+ * the inner track sideways, settling on one panel whenever you stop; each panel's scene
+ * plays as it arrives.
+ * Stacked (smaller or shorter screens): a vertical list; each scene plays as it arrives.
  * Reduced motion: the same list, final state, no triggers.
+ * The copy itself never animates: the sideways track and the scenes are this section's
+ * motion, and text that fades in while it moves is hard to read.
  */
 export function Work() {
   const root = useRef<HTMLElement>(null);
@@ -44,15 +45,6 @@ export function Work() {
 
           if (!walk) {
             panels.forEach((panel) => {
-              // See Task 5: reveal at 85%, play the scene at 70%.
-              gsap.from(panel.querySelectorAll(".wk-reveal"), {
-                y: 32,
-                opacity: 0,
-                duration: DURATION.base,
-                ease: EASE.out,
-                stagger: STAGGER.items,
-                scrollTrigger: { trigger: panel, start: "top 85%", toggleActions: "play none none none" },
-              });
               poseScene(stageOf(panel));
               ScrollTrigger.create({
                 trigger: stageOf(panel),
@@ -67,11 +59,24 @@ export function Work() {
             return () => panels.forEach((panel) => (stageOf(panel).dataset.state = "refused"));
           }
 
-          const el = root.current!;
-          const setProgress = gsap.quickSetter(el.querySelector(".wk-progress"), "scaleX");
-          const digits = el.querySelector(".wk-digits");
-          let current = -1;
           const distance = () => track.current!.scrollWidth - window.innerWidth;
+
+          // When scrolling stops, settle on one panel so nobody reads two half panels.
+          // Lean 0.3 of a panel the way you were scrolling: a fifth of a panel is enough to
+          // move on, so a short flick never springs back. No lean when the scroll began
+          // outside the pin, or overshooting its start would skip panel one. Where it began
+          // is recorded on scrollStart, edges inclusive: panel one at rest sits exactly on
+          // the pin's start, which isActive and onEnter count as outside.
+          let startedAt = 0;
+          const onScrollStart = () => (startedAt = window.scrollY);
+          ScrollTrigger.addEventListener("scrollStart", onScrollStart);
+          const snapTo = (value: number, self?: ScrollTrigger) => {
+            const st = self!;
+            const arrived = startedAt < st.start - 1 || startedAt > st.end + 1;
+            const points = panels.map((p) => gsap.utils.clamp(0, 1, p.offsetLeft / distance()));
+            const lean = arrived ? 0 : st.direction * (points[1] - points[0]) * 0.3;
+            return gsap.utils.snap(points, value + lean);
+          };
 
           // Linear x tween scrubbed by scroll (EASE.scrub): scroll position is the easing.
           // Pins when the wrapper's top meets the viewport top and holds for exactly the
@@ -87,41 +92,12 @@ export function Work() {
               end: () => `+=${distance()}`,
               invalidateOnRefresh: true,
               anticipatePin: 1,
-              onUpdate: (self) => {
-                setProgress(self.progress);
-                const step = Math.min(panels.length - 1, Math.round(self.progress * (panels.length - 1)));
-                if (step !== current) {
-                  current = step;
-                  // expo.out: the counter snaps to the new digit and feathers in.
-                  gsap.to(digits, {
-                    yPercent: (-100 / panels.length) * step,
-                    duration: DURATION.base,
-                    ease: EASE.expo,
-                    overwrite: true,
-                  });
-                }
-              },
+              // inertia off: snap from where the page stopped, not a velocity projection.
+              snap: { snapTo, delay: 0.15, duration: { min: 0.3, max: 0.6 }, ease: EASE.smooth, inertia: false },
             },
           });
 
-          panels.forEach((panel, i) => {
-            if (i > 0) {
-              // Scrubbed against the horizontal track via containerAnimation: blocks rise
-              // as the panel's left edge moves from 85% to 35% of the viewport width.
-              gsap.from(panel.querySelectorAll(".wk-reveal"), {
-                y: 40,
-                opacity: 0,
-                stagger: STAGGER.items,
-                ease: EASE.scrub,
-                scrollTrigger: {
-                  trigger: panel,
-                  containerAnimation: scroller,
-                  start: "left 85%",
-                  end: "left 35%",
-                  scrub: true,
-                },
-              });
-            }
+          panels.forEach((panel) => {
             // Play when the panel's left edge passes 55% of the screen, i.e. when it
             // owns most of the viewport. Panel one is already there at pin start.
             poseScene(stageOf(panel));
@@ -156,6 +132,7 @@ export function Work() {
           t.addEventListener("focusin", onFocus);
           return () => {
             t.removeEventListener("focusin", onFocus);
+            ScrollTrigger.removeEventListener("scrollStart", onScrollStart);
             panels.forEach((panel) => (stageOf(panel).dataset.state = "refused"));
           };
         },
@@ -177,30 +154,8 @@ export function Work() {
         />
       </div>
 
+      {/* No HUD: each panel already says "01 / 07" and the header line shows progress. */}
       <div ref={pin} className="wk-pin relative walk:h-svh walk:overflow-clip">
-        {/* HUD: walkthrough mode only. */}
-        <div className="label pointer-events-none absolute inset-x-0 top-0 z-20 hidden items-center justify-between px-10 pt-16 text-mute walk:flex">
-          <span>Keep scrolling →</span>
-          <div className="flex items-center gap-4">
-            <span className="flex h-[1.2em] overflow-hidden text-bone" aria-hidden="true">
-              {/* self-start: stretched to the 1.2em row, the column was one line tall and
-                  yPercent moved it 2px instead of a whole digit. */}
-              <span className="wk-digits flex flex-col self-start leading-[1.2em] will-change-transform">
-                {PROJECTS.map((p, i) => (
-                  <span key={p.slug}>{pad(i + 1)}</span>
-                ))}
-              </span>
-            </span>
-            <span className="relative h-px w-40 bg-line">
-              <span
-                className="wk-progress absolute inset-0 origin-left bg-neon will-change-transform"
-                style={{ transform: "scaleX(0)" }}
-              />
-            </span>
-            <span>{pad(PROJECTS.length)}</span>
-          </div>
-        </div>
-
         <div
           ref={track}
           className="wk-track relative flex flex-col gap-24 px-4 py-16 sm:px-6 md:px-10 walk:h-full walk:w-max walk:flex-row walk:gap-0 walk:p-0 walk:will-change-transform"

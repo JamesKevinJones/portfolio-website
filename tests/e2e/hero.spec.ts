@@ -32,11 +32,9 @@ test("reduced motion: no pin, no Lenis, final composition", async ({ page }) => 
   await expect(page.locator("#top > section, #top .pin-spacer > section").first()).toBeVisible();
   await expect(page.locator(".pin-spacer")).toHaveCount(0);
   await expect(page.locator("html.lenis")).toHaveCount(0);
-  // Marquee shows one copy only; the duplicate used for looping is hidden.
-  await expect(page.locator("[data-marquee] [data-copy='loop']")).toBeHidden();
 });
 
-test("375px: hero rows and ticker never push the page sideways", async ({ page }) => {
+test("375px: hero rows never push the page sideways", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await page.waitForTimeout(1600);

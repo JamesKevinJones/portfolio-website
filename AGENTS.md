@@ -46,7 +46,7 @@ The hazard stripe (`.hazard`, neon on ink) is on the refusal band and nowhere el
 ## Motion
 
 Import GSAP from `@/lib/gsap` (plugins and custom eases registered once) and timing
-from `@/lib/animation-constants` (`EASE`, `DURATION`, `STAGGER`, `SCROLL`, `MQ`).
+from `@/lib/animation-constants` (`EASE`, `DURATION`, `SCROLL`, `MQ`).
 Lenis lives in `components/lenis-provider.tsx`, on the GSAP ticker; `useLenis()` returns
 it, or null under reduced motion.
 
@@ -62,10 +62,17 @@ it, or null under reduced motion.
 - Deep links: the browser jumps to `/#about` before the walkthrough pin inserts its
   spacer, so `lenis-provider.tsx` lands on the hash once more after the first
   `ScrollTrigger.refresh()`. Keep that if you touch the provider.
-- Borrowed from cred.club (see `docs/DECISIONS.md`): `ui/ink-reveal` (about copy),
-  `ui/pointer-lens` (portrait), `ui/contact-chip` (floating copy-email pill, shares
-  `lib/use-copy-email.ts` with the footer) and `.rule-fade` hairlines. Same rules as
-  everything else: transform and opacity only, readable resting state.
+- **Each animation has its own job; copy never animates.** The page used to fade up
+  every block on scroll, and a reviewer read it as "same transition everywhere". What
+  is left: the hero intro and its tear-away pin, the sideways walkthrough, the refusal
+  scenes, the About photo curtain, the Rules accordion and pointer feedback. Don't add
+  a scroll reveal to headings, panel copy or body text (see `docs/DECISIONS.md`,
+  2026-10-30).
+- Say each thing once: no ticker of the refusal headlines, no walkthrough HUD, no
+  header clock, no floating email chip. Each repeated something already on the page.
+- Borrowed from cred.club (see `docs/DECISIONS.md`): `ui/pointer-lens` (portrait) and
+  `.rule-fade` hairlines. Same rules as everything else: transform and opacity only,
+  readable resting state.
 
 ## Refusal scenes
 
@@ -83,10 +90,9 @@ app/layout.tsx            fonts, metadata, grain overlay, LenisProvider, skip li
 lib/projects.ts           seven projects (+ attempt verbs), four principles, STACK
 lib/site.ts               canonical URL and profile links
 lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
-lib/use-copy-email.ts     clipboard hook shared by the footer and the contact chip
+lib/use-copy-email.ts     clipboard hook for the footer's Copy email button
 components/ui/            magnetic-button · section-heading · particle-field ·
-                          velocity-marquee · local-time · contact-chip ·
-                          ink-reveal · pointer-lens
+                          local-time · pointer-lens
 components/scenes/        one refusal scene per project + registry
 components/               hero · work · project-panel · live-shots · approach · about ·
                           site-header · site-footer · lenis-provider · brand-icons
