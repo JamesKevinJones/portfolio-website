@@ -53,7 +53,7 @@ test("the particle field keeps drawing after the hero pin is measured", async ({
   await expect(page.getByTestId("local-time").first()).toHaveText(/\d/);
   // Painted pixels plus a position-weighted checksum: changes when the dots move.
   const paint = () =>
-    page.locator("#top canvas").evaluate((c: HTMLCanvasElement) => {
+    page.locator("#top .hero-bg canvas").evaluate((c: HTMLCanvasElement) => {
       const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
       let n = 0;
       let sum = 0;

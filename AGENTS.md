@@ -64,7 +64,7 @@ it, or null under reduced motion.
   `ScrollTrigger.refresh()`. Keep that if you touch the provider.
 - **Each animation has its own job; copy never animates.** The page used to fade up
   every block on scroll, and a reviewer read it as "same transition everywhere". What
-  is left: the hero intro and its tear-away pin, the sideways walkthrough, the refusal
+  is left: the hero intro and its tear-away pin, the hero pull chain, the sideways walkthrough, the refusal
   scenes, the About photo curtain, the Rules accordion and pointer feedback. Don't add
   a scroll reveal to headings, panel copy or body text (see `docs/DECISIONS.md`,
   2026-10-30).
@@ -92,7 +92,8 @@ lib/site.ts               canonical URL and profile links
 lib/gsap.ts               plugin registration · lib/animation-constants.ts timing
 lib/use-copy-email.ts     clipboard hook for the footer's Copy email button
 components/ui/            magnetic-button · section-heading · particle-field ·
-                          local-time · pointer-lens
+                          local-time · pointer-lens · pull-chain (+ lazy
+                          pull-chain-scene.ts: three.js + Verlet physics)
 components/scenes/        one refusal scene per project + registry
 components/               hero · work · project-panel · live-shots · approach · about ·
                           site-header · site-footer · lenis-provider · brand-icons

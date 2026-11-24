@@ -7,6 +7,7 @@ import { PROJECTS } from "@/lib/projects";
 import { PROFILE } from "@/lib/site";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { ParticleField } from "@/components/ui/particle-field";
+import { PullChain } from "@/components/ui/pull-chain";
 
 const LIVE_COUNT = PROJECTS.filter((p) => p.status === "Live").length;
 
@@ -51,6 +52,7 @@ export function Hero() {
         });
         out
           .to(".hero-meta", { y: -40, opacity: 0, ease: EASE.scrub }, 0)
+          .to(".hero-chain", { yPercent: -12, opacity: 0, ease: EASE.scrub }, 0)
           .to(".hero-bg", { opacity: 0.35, ease: EASE.scrub }, 0);
         // .hero-stop is deliberately absent from this timeline.
 
@@ -74,6 +76,8 @@ export function Hero() {
           <ParticleField spacing={24} radius={190} freezeSelector=".hero-stop" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,var(--color-ink)_85%)]" />
         </div>
+        {/* Pull the tag and the field above stops: "when to stop" as a switch. */}
+        <PullChain className="hero-chain" />
 
         <h1 className="font-display text-[clamp(2.6rem,11.5vw,11.5rem)] font-medium leading-[0.9] tracking-[-0.045em]">
           <span className="sr-only">Systems that know when to stop.</span>

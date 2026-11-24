@@ -194,3 +194,27 @@ counts as outside, so every flick from panel one looked like a fresh arrival and
 back. Measured at 1440x900 with 175px wheel ticks: a 225px overshoot lands on panel one,
 two ticks go to the next panel, one tick springs back, and the pin still lets you out at
 both ends.
+
+## The hero pull chain (2026-11-24)
+
+A steel ball chain hangs into the top-right of the hero with an edge-lit acrylic tag
+on the end. Drag it around; pull it down past the chain's reach and the switch clicks,
+which stops the particle field (pull again to restart it). "Systems that know when to
+stop" as something you can operate, rather than another thing to read.
+
+- **Why a pull switch:** it is the one everyday object whose whole job is turning
+  something off, so it carries the thesis without a word of copy.
+- **Why it isn't a duplicate of hovering "stop.":** hover is a momentary freeze, the
+  switch is a latched state, and the tag shows it (FIELD ON / FIELD OFF, rim glow on or
+  dimmed). `ParticleField` keeps the two as separate flags; either one holds the field.
+- **three.js 0.187.0**, loaded with a dynamic `import()` from `ui/pull-chain.tsx`, so
+  it is not in the first-load bundle. The physics is hand-rolled Verlet (no Rapier, no
+  React Three Fiber): about 15 points, and one dependency instead of four.
+- **Pointer events:** the canvas takes none, so the headline, the "stop." hover and
+  touch scrolling all behave as before. Only an invisible handle kept over the tag's
+  on-screen box takes pointers (`touch-none`, `data-lenis-prevent`).
+- **Reduced motion, no JS, or no WebGL:** nothing renders and the hero is unchanged.
+  The loop sleeps once the tag settles, so an idle hero does not keep rendering.
+- **Tests:** `tests/e2e/pull-chain.spec.ts` launches Chromium with
+  `--enable-unsafe-swiftshader`, because headless Chrome no longer falls back to
+  software WebGL on its own and the chain would never render there.

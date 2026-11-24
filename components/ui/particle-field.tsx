@@ -4,6 +4,9 @@ import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/animation-constants";
 
+/** Window event the hero's pull chain fires; `detail.stopped` holds the field still. */
+export const FIELD_PULL_EVENT = "kj:field-pull";
+
 type ParticleFieldProps = {
   /** Grid pitch in CSS pixels. */
   spacing?: number;
@@ -161,14 +164,26 @@ export function ParticleField({
         else gsap.ticker.remove(tick);
       };
 
+      // Two independent reasons to stop: hovering the freeze element, and the hero's pull
+      // chain switch (FIELD_PULL_EVENT). Either one holds the field still.
+      let hovered = false;
+      let pulled = false;
       const freezeEl = freezeSelector ? document.querySelector(freezeSelector) : null;
-      const onFreeze = () => {
-        frozen = true;
+      const sync = () => {
+        frozen = hovered || pulled;
         setRunning();
       };
+      const onFreeze = () => {
+        hovered = true;
+        sync();
+      };
       const onThaw = () => {
-        frozen = false;
-        setRunning();
+        hovered = false;
+        sync();
+      };
+      const onPull = (e: Event) => {
+        pulled = Boolean((e as CustomEvent<{ stopped: boolean }>).detail?.stopped);
+        sync();
       };
 
       const heatTo = gsap.quickTo(pointer, "heat", { duration: 0.6, ease: "power2.out" });
@@ -201,6 +216,7 @@ export function ParticleField({
         freezeEl.addEventListener("pointerleave", onThaw);
       }
       if (animate) {
+        window.addEventListener(FIELD_PULL_EVENT, onPull);
         window.addEventListener("pointermove", onMove, { passive: true });
         document.documentElement.addEventListener("pointerleave", onLeave);
       }
@@ -215,6 +231,7 @@ export function ParticleField({
         document.removeEventListener("visibilitychange", setRunning);
         freezeEl?.removeEventListener("pointerenter", onFreeze);
         freezeEl?.removeEventListener("pointerleave", onThaw);
+        window.removeEventListener(FIELD_PULL_EVENT, onPull);
         window.removeEventListener("pointermove", onMove);
         document.documentElement.removeEventListener("pointerleave", onLeave);
       };
