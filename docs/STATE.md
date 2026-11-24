@@ -4,16 +4,17 @@
 
 ## Where things stand
 
-**Newest: the hero pull chain, on branch `feat/pull-chain`, NOT committed or pushed
-(2026-11-24).** A ball chain with an edge-lit tag hangs top-right in the hero; pulling it
-down toggles the particle field (reasoning in `docs/DECISIONS.md`, "The hero pull
-chain"). New: `components/ui/pull-chain.tsx`, `components/ui/pull-chain-scene.ts`,
-`tests/e2e/pull-chain.spec.ts`; `three@0.187.0` + `@types/three` added. Changed:
-`hero.tsx` (mount + scroll fade), `particle-field.tsx` (`FIELD_PULL_EVENT`, separate
-hover/pull freeze flags), `hero.spec.ts` (particle canvas selector, now that `#top` has
-two canvases). Verified: `npm run lint` clean, `npm run test:e2e:prod` 56/56; checked by
-eye at 1912 and 375 wide. Next step: Kevin reviews it in the browser, then commit, run
-`/security-review`, push.
+**Newest: the hero pull chain, live on `main` at `4835426` (2026-11-24), confirmed on the
+deployed site: the served HTML has the chain and its handle, and in Chrome it reaches
+`data-state="live"` and renders top-right, clear of the headline.** A ball chain with an
+edge-lit tag; pulling it down toggles the particle field (reasoning in
+`docs/DECISIONS.md`, "The hero pull chain"). New: `components/ui/pull-chain.tsx`,
+`components/ui/pull-chain-scene.ts`, `tests/e2e/pull-chain.spec.ts`; `three@0.187.0` +
+`@types/three` added. Changed: `hero.tsx` (mount + scroll fade), `particle-field.tsx`
+(`FIELD_PULL_EVENT`, separate hover/pull freeze flags), `hero.spec.ts` (particle canvas
+selector, now that `#top` has two canvases). Verified before the push: `npm run lint`
+clean, `npm run test:e2e:prod` 56/56, `/security-review` found nothing. The
+`feat/pull-chain` branch is merged and can be deleted.
 
 **Newest: a pass on a reviewer's feedback, live on `main` at `d6bfc0d` (2026-10-30), confirmed on
 the deployed site: no outline text, ticker, HUD or chip in the served HTML, one clock and one
