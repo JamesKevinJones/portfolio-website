@@ -1,8 +1,21 @@
 # Project State
 
-**Last updated:** 2026-11-24 by claude-code
+**Last updated:** 2026-11-26 by claude-code
 
 ## Where things stand
+
+**Newest: ForgeAI added as panel eight, committed locally and NOT pushed (2026-11-26).**
+Hold the push until the OceanAI recruitment round is over: its assignment says "Do not
+copy this assignment or share your work with other candidates. If similar submissions are
+found, all of them will be rejected." The ForgeAI repo and results site are public because
+reviewers need them, but the portfolio would advertise them. To publish later: run
+`/security-review` on the pending diff, push `main`, then confirm the live site shows 8
+panels. Changes: `lib/projects.ts` (ForgeAI entry, new optional `liveLabel`, used as
+"Results site"), `components/scenes/forgeai.tsx` (+ registry), `project-panel.tsx` (reads
+`liveLabel`), hero/work/README/AGENTS copy "seven" to "eight", `content.spec.ts` count.
+Verified: lint clean; `test:e2e:prod` 56/56 on two full runs at `--workers=2` (default
+parallelism flaked on unrelated hero/pull-chain timeouts on this laptop; the baseline
+without ForgeAI also passed 56/56); panel checked at 1440x900 and 375px.
 
 **Newest: the hero pull chain, live on `main` at `4835426` (2026-11-24), confirmed on the
 deployed site: the served HTML has the chain and its handle, and in Chrome it reaches

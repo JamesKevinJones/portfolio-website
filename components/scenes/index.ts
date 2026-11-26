@@ -8,6 +8,7 @@ import { CodeautoScene, playCodeauto } from "./codeauto";
 import { JobRagScene, playJobRag } from "./job-rag";
 import { MemoryvaultScene, playMemoryvault } from "./memoryvault";
 import { AgentshellScene, playAgentshell } from "./agentshell";
+import { ForgeaiScene, playForgeai } from "./forgeai";
 
 type SceneDef = {
   Scene: () => JSX.Element;
@@ -22,6 +23,7 @@ export const SCENES: Record<SceneKey, SceneDef> = {
   "job-rag": { Scene: JobRagScene, play: playJobRag },
   "memoryvault-ai": { Scene: MemoryvaultScene, play: playMemoryvault },
   agentshell: { Scene: AgentshellScene, play: playAgentshell },
+  forgeai: { Scene: ForgeaiScene, play: playForgeai },
 };
 
 const running = new WeakMap<HTMLElement, gsap.core.Timeline>();

@@ -15,7 +15,8 @@ export type SceneKey =
   | "codeaut0"
   | "job-rag"
   | "memoryvault-ai"
-  | "agentshell";
+  | "agentshell"
+  | "forgeai";
 
 export type Project = {
   slug: SceneKey;
@@ -35,6 +36,11 @@ export type Project = {
   facts: string[];
   stack: string[];
   live?: string;
+  /**
+   * Label for the `live` link when it is not a running app (default "Live"). ForgeAI's
+   * link is a results site; "Live" would promise an agent you can chat with.
+   */
+  liveLabel?: string;
   source: string;
   /**
    * A screenshot of the live deployment, taken 2026-10-17 (JobMatch retaken 2026-10-19). The caption says only what is
@@ -192,6 +198,32 @@ export const PROJECTS: Project[] = [
     facts: ["113 tests, no agent CLI spawned", "5-backend failover chain", "1 dependency"],
     stack: ["Python 3.11", "prompt_toolkit", "SQLite", "PowerShell"],
     source: "https://github.com/JamesKevinJones/agentshell",
+  },
+  {
+    slug: "forgeai",
+    name: "ForgeAI",
+    domain: "Agent evaluation",
+    // The factory is a CLI; the Live link is its results site on GitHub Pages, not a
+    // hosted factory (there is no free place to run the model).
+    status: "CLI",
+    blurb:
+      "Give it a one-paragraph brief and a folder of documents. It builds an agent, writes an eval set from the documents, judges the agent and runs a critic loop, all on a 4B local model.",
+    // Quoted from README.md ("no LLM output is trusted on its own: each claim that matters
+    // is checked by code") and AGENTS.md rule 1; the salary example is README "What running
+    // it caught" and runs/hr/requirements.json.
+    refuses: {
+      headline: "It won’t take the model’s word for it.",
+      detail:
+        "No model output is trusted on its own: the quote must be in the source, the fact in its passage, the number in the evidence. Asked whether the HR documents cover salary credit dates, the model said yes and quoted the leave-year sentence. The passage never mentions salary, so the guard rejected it.",
+    },
+    attempt: "Trust the model",
+    // Measured from the committed runs (scripts/verify_submission.py reproduces them):
+    // HR held-out 5/8, procurement 6/8; 25 + 26 eval cases with every failure kept.
+    facts: ["Held-out 5/8 and 6/8", "51 eval cases, failures kept", "4B model on a 6 GB GPU"],
+    stack: ["Python 3.12", "Ollama", "gemma3:4b", "numpy"],
+    live: "https://jameskevinjones.github.io/forgeai/",
+    liveLabel: "Results site",
+    source: "https://github.com/JamesKevinJones/forgeai",
   },
 ];
 

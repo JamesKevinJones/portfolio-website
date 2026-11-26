@@ -149,7 +149,7 @@ export function Work() {
         <SectionHeading
           index="01"
           eyebrow="Selected work"
-          title="Seven systems, and what each one won’t do."
+          title="Eight systems, and what each one won’t do."
           lede="Every refusal below is a documented decision in that project’s own README or agent context. Press the button on each one and ask it anyway."
         />
       </div>

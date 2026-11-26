@@ -139,7 +139,7 @@ export function ProjectPanel({ project, index, total }: ProjectPanelProps) {
                 rel="noreferrer noopener"
                 className="label inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2.5 transition-colors hover:border-neon hover:text-neon"
               >
-                Live <ArrowUpRight size={14} aria-hidden="true" />
+                {project.liveLabel ?? "Live"} <ArrowUpRight size={14} aria-hidden="true" />
               </a>
             )}
             <a

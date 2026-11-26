@@ -218,3 +218,19 @@ stop" as something you can operate, rather than another thing to read.
 - **Tests:** `tests/e2e/pull-chain.spec.ts` launches Chromium with
   `--enable-unsafe-swiftshader`, because headless Chrome no longer falls back to
   software WebGL on its own and the chain would never render there.
+
+## ForgeAI is the eighth project (2026-11-26)
+
+ForgeAI is the agent-factory assignment for OceanAI: brief and documents in, tested agent
+out, on a 4B local model. Its refusal is quoted from its README ("no LLM output is trusted
+on its own") and AGENTS.md rule 1, and the example (the model called salary credit dates
+supported and quoted the leave-year sentence; the guard rejected it) is from the README's
+"What running it caught" and `runs/hr/requirements.json`. Facts are read from the committed
+runs, which `scripts/verify_submission.py` reproduces.
+
+Appended as panel eight, same reason as agentshell. Status is "CLI" because the factory is a
+CLI; its link goes to a results site on GitHub Pages, so a new optional `liveLabel` makes
+that button read "Results site" instead of "Live", which would promise a running agent. It
+gets no screenshot: the shots section is "the live deployments", and a showcase page is not
+one. Not pushed yet, until the recruitment round ends (see `docs/STATE.md`).
+
