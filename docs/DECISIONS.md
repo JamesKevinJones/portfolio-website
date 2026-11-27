@@ -232,5 +232,6 @@ Appended as panel eight, same reason as agentshell. Status is "CLI" because the 
 CLI; its link goes to a results site on GitHub Pages, so a new optional `liveLabel` makes
 that button read "Results site" instead of "Live", which would promise a running agent. It
 gets no screenshot: the shots section is "the live deployments", and a showcase page is not
-one. Not pushed yet, until the recruitment round ends (see `docs/STATE.md`).
+one. First held locally until the recruitment round ended; Kevin chose to publish it on
+2026-11-27, knowing the assignment's rule against sharing work with other candidates.
 

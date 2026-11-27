@@ -1,16 +1,14 @@
 # Project State
 
-**Last updated:** 2026-11-26 by claude-code
+**Last updated:** 2026-11-27 by claude-code
 
 ## Where things stand
 
-**Newest: ForgeAI added as panel eight, committed locally and NOT pushed (2026-11-26).**
-Hold the push until the OceanAI recruitment round is over: its assignment says "Do not
+**Newest: ForgeAI added as panel eight, pushed 2026-11-27 at Kevin's request.** It was
+first held locally because the OceanAI assignment says "Do not
 copy this assignment or share your work with other candidates. If similar submissions are
-found, all of them will be rejected." The ForgeAI repo and results site are public because
-reviewers need them, but the portfolio would advertise them. To publish later: run
-`/security-review` on the pending diff, push `main`, then confirm the live site shows 8
-panels. Changes: `lib/projects.ts` (ForgeAI entry, new optional `liveLabel`, used as
+found, all of them will be rejected." Kevin chose to publish anyway; `/security-review`
+found nothing before the push. Changes: `lib/projects.ts` (ForgeAI entry, new optional `liveLabel`, used as
 "Results site"), `components/scenes/forgeai.tsx` (+ registry), `project-panel.tsx` (reads
 `liveLabel`), hero/work/README/AGENTS copy "seven" to "eight", `content.spec.ts` count.
 Verified: lint clean; `test:e2e:prod` 56/56 on two full runs at `--workers=2` (default
